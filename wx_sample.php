@@ -5,7 +5,11 @@
  */
 //define your token
 define("TOKEN", "weixin");
+
 // $weixinData=array();
+include './includefiles.php';
+$access_token = getAccessToken(1);
+
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
 
@@ -16,13 +20,8 @@ class wechatCallbackapiTest {
 
         //valid signature , option
         if ($this->checkSignature()) {
-            echo $echoStr;
 
-
-            file_put_contents("./wx_sam.txt", $echoStr);
             $this->responseMsg();
-//            file_put_contents("./wx_samresponseMsg.txt", $echoStr);
-
 
             exit;
         }
@@ -44,10 +43,11 @@ class wechatCallbackapiTest {
             $wxData = array();
 
             $wxData['fromUsername'] = $postObj->FromUserName;
-            $wxData['oUsername'] = $postObj->ToUserName;
+            $wxData['toUsername'] = $postObj->ToUserName;
             $wxData['keyword'] = trim($postObj->Content);
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
+            $contentStr = "";
             $textTpl = "<xml>
 							<ToUserName><![CDATA[%s]]></ToUserName>
 							<FromUserName><![CDATA[%s]]></FromUserName>
@@ -56,48 +56,42 @@ class wechatCallbackapiTest {
 							<Content><![CDATA[%s]]></Content>
 							<FuncFlag>0</FuncFlag>
 							</xml>";
+
+            //数据插入
+            insertOpenId($wxData['fromUsername']);
+            
+            //事件处理
+            if($wxData['MsgType']){
+                
+            }
             if (!empty($wxData['keyword'])) {
                 //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
-
+                file_put_contents("./keyword.txt", $wxData['keyword']);
                 switch ($wxData['keyword']) {
                     case "摇一摇":
                         //发送图文消息
-                        $textTpl = "<xml>
-                            <ToUserName><![CDATA[%s]]></ToUserName>
-                            <FromUserName><![CDATA[%s]]></FromUserName>
-                            <CreateTime>%s</CreateTime>
-                            <MsgType><![CDATA[%s]]></MsgType>
-                            <ArticleCount>1</ArticleCount>
-                            <Articles>
-                            <item>
-                            <Title><![CDATA[%s]]></Title> 
-                            <Description><![CDATA[%s]]></Description>
-                            <PicUrl><![CDATA[%s]]></PicUrl>
-                            <Url><![CDATA[%s]]></Url>
-                            </item>
-                            </Articles>
-                            </xml> ";
-                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", "http://www.baidu.com");
-                        echo $resultStr;
-                        exit;
+                        $resultStr = yaoyiyao($wxData);
                         break;
                     case "投票":
 
+                        $contentStr = "投票";
+                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
+                        file_put_contents("./toupiao.txt", $resultStr);
                         break;
                     default:
+                        //其他文职消息， 可以推送给管理员
+
                         break;
                 }
-
-
-
-                $wxData['msgType'] = "text";
-                $contentStr = "Welcome to wechat world!您的输入类型为：" . $MsgType . $keyword . $_SESSION['content']
-                        . "---" . $fromUsername;
+                echo $resultStr;
+                exit;
             } else {
-                $contentStr = "Welcome to wechat world!您的输入类型为：" . $MsgType . $keyword . $_SESSION['content'];
+                $contentStr = "Welcome to wechat world!您的输入类型为：" . $wxData['msgType'] . $wxData['keyword']
+                        . "-22--" . $wvData['fromUsername'];
             }
-            $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+            $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
             echo $resultStr;
+            exit;
         } else {
             echo "";
             exit;
@@ -131,7 +125,54 @@ class wechatCallbackapiTest {
 }
 
 //function 
-function sendMess(){
+function sendMess() {
     
 }
+
+function yaoyiyao($wxData) {
+    $textTpl = "<xml>
+    <ToUserName><![CDATA[%s]]></ToUserName>
+    <FromUserName><![CDATA[%s]]></FromUserName>
+    <CreateTime>%s</CreateTime>
+    <MsgType><![CDATA[%s]]></MsgType>
+    <ArticleCount>1</ArticleCount>
+    <Articles>
+    <item>
+    <Title><![CDATA[%s]]></Title> 
+    <Description><![CDATA[%s]]></Description>
+    <PicUrl><![CDATA[%s]]></PicUrl>
+    <Url><![CDATA[%s]]></Url>
+    </item>
+    </Articles>
+    </xml> ";
+
+    return sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+}
+
+function insertOpenId($openId) {
+    if (empty($openId)) {
+        return false;
+    }
+    $mydb = new mysql();
+    //看是否有数据  
+
+    $sql = "select p_id from weixin_attention where delated =0 and openid = '" . $openId . "'";
+    $res = $mydb->execute($sql);
+    $res = $mydb->fetch_assoc($res);
+    if ($res) {//update
+        $data = array(
+            'update' => time(),
+        );
+        $mydb->update("weixin_attention", $data, "p_id = " . $res[0]['p_id']);
+    } else {//insert   username 需要  调用方法
+        $data = array(
+            'openid' => $openId,
+            'username' => $openId,
+            'created' => time(),
+        );
+        $mydb->insert("weixin_attention", $data);
+    }
+    return true;
+}
+
 ?>
