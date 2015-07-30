@@ -32,7 +32,6 @@ class wechatCallbackapiTest {
         //get post data, May be due to the different environments
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
 //        file_put_contents("./wx_samresponseMsg.txt", json_encode($GLOBALS));
-
         //extract post data
         if (!empty($postStr)) {
             /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
@@ -41,7 +40,7 @@ class wechatCallbackapiTest {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
 
             $wxData = array();
-            $wxData['postObj']=$postObj;
+            $wxData['postObj'] = $postObj;
             $wxData['fromUsername'] = $postObj->FromUserName;
             $wxData['toUsername'] = $postObj->ToUserName;
             $wxData['keyword'] = trim($postObj->Content);
@@ -127,7 +126,6 @@ function yaoyiyao($wxData) {
     </item>
     </Articles>
     </xml> ";
-
     return sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
 }
 
@@ -159,8 +157,6 @@ function insertOpenId($openId) {
 
 function typeText($wxData) {
     if (!empty($wxData['keyword'])) {
-        //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
-        
         switch ($wxData['keyword']) {
             case "摇一摇":
                 //发送图文消息
@@ -171,6 +167,7 @@ function typeText($wxData) {
                 break;
             default:
                 //其他文职消息， 可以推送给管理员
+                $resultStr = textMessage($wxData, "感谢您的关注！不知道输什么？ 可以试试 摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
                 break;
         }
         echo $resultStr;
@@ -182,12 +179,22 @@ function typeEvent($wxData) {
     switch ($wxData['event']) {
         case "subscribe":
             //发送图文消息
-            $resultStr = textMessage($wxData,"感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
+            $resultStr = textMessage($wxData, "感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
             break;
         case "unsubscribe":
             //t推送给管理员
-            $wxData['fromUsername']="oC62huMMqGoRhQfwBqX3w_ukxuU4";
-            $resultStr = textMessage($wxData,"感谢您的关注");
+            $wxData['fromUsername'] = "oC62huMMqGoRhQfwBqX3w_ukxuU4";
+            $resultStr = textMessage($wxData, "感谢您的关注");
+            break;
+        case "CLICK":
+            //自定义菜单的点击事件
+            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
+            eventClick($wxData);
+            break;
+        case "VIEW":
+            //自定义菜单的视图连接事件  主要是    获取openId
+//            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
+//            eventClick($wxData);  
             break;
         default:
             //其他文职消息， 可以推送给管理员
@@ -197,8 +204,28 @@ function typeEvent($wxData) {
     exit;
 }
 
-function textMessage($wxData,$wxContent){
+function eventClick($wxData) {
+//    $wxData['EventKey']   根据自定义菜单来判断
+    switch ($wxData['EventKey']) {
+        case 0:
+            $resultStr = textMessage($wxData, "点击了 0 号菜单");
+            break;
+        case 1:
+            $resultStr = textMessage($wxData, "点击了 1 号菜单");
+            break;
+        case 2:
+            $resultStr = textMessage($wxData, "点击了 2 号菜单");
+            break;
 
+        default:
+            break;
+
+            echo $resultStr;
+            exit;
+    }
+}
+
+function textMessage($wxData, $wxContent) {
     return sprintf($wxData['textTpl'], $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "text", $wxContent);
 }
 
