@@ -16,15 +16,15 @@ $data = array(
     'deleted' => 0
 );
 $db->insert($table, $data);
-$t= $db->selectOne("SELECT MIN(created) as s,MAX(created) as e FROM weixin_shake WHERE openid='-1' AND deleted=0");
+$t= $db->selectOne("SELECT MIN(created) as s,MAX(created) as e FROM weixin_shake WHERE openid='{$id}' AND deleted=0");
 $start=$t['s'];
 $end=$t['e'];
-$sql = "SELECT count(1) as c FROM weixin_shake WHERE openid='{$id }' and created>='{$start}' and created<='{$end}'";
+$sql = "SELECT count(1) as c FROM weixin_shake WHERE openid='{$id}' and created>='{$start}' and created<='{$end}'";
 $c = $db->selectOne($sql);
 $info=array(
     'total'=>$c['c'],
     'start'=> date('Y-m-d H:i:s', $start),
     'end'=> date('Y-m-d H:i:s', $end)
 );
-
+//file_put_contents('test.txt', $id."\n",FILE_APPEND);
 echo json_encode($info);

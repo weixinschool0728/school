@@ -12,7 +12,7 @@ and open the template in the editor.
         <script src="./js/jquery.min.js"></script>
         <script type="text/javascript">
             var color = new Array('#fff', '#ff0', '#f00', '#000', '#00f', '#0ff');
-            var id =<?php echo isset($_GET['id']) ? $_GET['id'] : '-1'; ?>;
+            var id ="<?php echo isset($_GET['id']) ? $_GET['id'] : '-1'; ?>";
             if (window.DeviceMotionEvent) {
                 var speed = 25;
                 var x = y = z = lastX = lastY = lastZ = 0;

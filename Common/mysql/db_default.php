@@ -13,7 +13,7 @@ class db {
     private function __construct() {
         $this->conn = mysqli_connect($this->host, $this->user_name, $this->password);
         if (!mysqli_select_db($this->conn, $this->db_name)) {
-            echo "失败";
+            return false;
         };
         mysqli_query($this->conn, 'set names utf8');
     }
