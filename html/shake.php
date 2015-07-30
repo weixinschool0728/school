@@ -12,6 +12,7 @@ and open the template in the editor.
         <script src="./js/jquery.min.js"></script>
         <script type="text/javascript">
             var color = new Array('#fff', '#ff0', '#f00', '#000', '#00f', '#0ff');
+             var id=<?php echo isset($_GET['id'])?$_GET['id']:'-1';?>;
             if (window.DeviceMotionEvent) {
                 var speed = 25;
                 var x = y = z = lastX = lastY = lastZ = 0;
@@ -20,6 +21,12 @@ and open the template in the editor.
                     x = acceleration.x;
                     y = acceleration.y;
                     if (Math.abs(x - lastX) > speed || Math.abs(y - lastY) > speed) {
+                        //这里面写异步加载处理
+                        $.getJSON("../control/shake.php?id="+id, function(data) {
+                           //alert(data.statu);
+                           
+                        });
+                    //结束异步加载
                         document.body.style.backgroundColor = color[Math.round(Math.random() * 10) % 6];
                     }
                     lastX = x;
@@ -29,6 +36,7 @@ and open the template in the editor.
         </script>  
     </head>
     <body>
-      HTML 5 手机摇一摇，在手机上运行的。  
+        HTML 5 手机摇一摇，在手机上运行的。  
     </body>
+
 </html>
