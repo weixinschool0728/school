@@ -64,7 +64,31 @@ class wechatCallbackapiTest {
             if($wxData['MsgType']){
                 
             }
-            
+            if (!empty($wxData['keyword'])) {
+                //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
+                file_put_contents("./keyword.txt", $wxData['keyword']);
+                switch ($wxData['keyword']) {
+                    case "摇一摇":
+                        //发送图文消息
+                        $resultStr = yaoyiyao($wxData);
+                        break;
+                    case "投票":
+
+                        $contentStr = "投票";
+                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
+                        file_put_contents("./toupiao.txt", $resultStr);
+                        break;
+                    default:
+                        //其他文职消息， 可以推送给管理员
+
+                        break;
+                }
+                echo $resultStr;
+                exit;
+            } else {
+                $contentStr = "Welcome to wechat world!您的输入类型为：" . $wxData['msgType'] . $wxData['keyword']
+                        . "-22--" . $wvData['fromUsername'];
+            }
             $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
             echo $resultStr;
             exit;
