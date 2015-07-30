@@ -5,8 +5,11 @@
  */
 //define your token
 define("TOKEN", "weixin");
+
 // $weixinData=array();
 include './includefiles.php';
+$access_token = getAccessToken(1);
+
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
 
@@ -17,7 +20,7 @@ class wechatCallbackapiTest {
 
         //valid signature , option
         if ($this->checkSignature()) {
-            echo $echoStr;
+//            echo $echoStr;
 
 
             file_put_contents("./wx_sam.txt", $echoStr);
@@ -49,7 +52,7 @@ class wechatCallbackapiTest {
             $wxData['keyword'] = trim($postObj->Content);
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
-            $contentStr = "moren";
+            $contentStr = "";
             $textTpl = "<xml>
 							<ToUserName><![CDATA[%s]]></ToUserName>
 							<FromUserName><![CDATA[%s]]></FromUserName>
@@ -58,44 +61,27 @@ class wechatCallbackapiTest {
 							<Content><![CDATA[%s]]></Content>
 							<FuncFlag>0</FuncFlag>
 							</xml>";
-            
+
             //数据插入
             insertOpenId($wxData['fromUsername']);
             if (!empty($wxData['keyword'])) {
                 //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
-
+                file_put_contents("./keyword.txt", $wxData['keyword']);
                 switch ($wxData['keyword']) {
                     case "摇一摇":
                         //发送图文消息
-                        $textTpl = "<xml>
-                            <ToUserName><![CDATA[%s]]></ToUserName>
-                            <FromUserName><![CDATA[%s]]></FromUserName>
-                            <CreateTime>%s</CreateTime>
-                            <MsgType><![CDATA[%s]]></MsgType>
-                            <ArticleCount>1</ArticleCount>
-                            <Articles>
-                            <item>
-                            <Title><![CDATA[%s]]></Title> 
-                            <Description><![CDATA[%s]]></Description>
-                            <PicUrl><![CDATA[%s]]></PicUrl>
-                            <Url><![CDATA[%s]]></Url>
-                            </item>
-                            </Articles>
-                            </xml> ";
-
-                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
-                        echo $resultStr;
-//                        exit;
+                        $resultStr = yaoyiyao($wxData);
                         break;
                     case "投票":
                         $contentStr = "投票";
                         $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
-                        echo $resultStr;
-                        exit;
+                        file_put_contents("./toupiao.txt", $resultStr);
                         break;
                     default:
                         break;
                 }
+                echo $resultStr;
+                exit;
 
 
 
@@ -145,6 +131,26 @@ function sendMess() {
     
 }
 
+function yaoyiyao($wxData) {
+    $textTpl = "<xml>
+    <ToUserName><![CDATA[%s]]></ToUserName>
+    <FromUserName><![CDATA[%s]]></FromUserName>
+    <CreateTime>%s</CreateTime>
+    <MsgType><![CDATA[%s]]></MsgType>
+    <ArticleCount>1</ArticleCount>
+    <Articles>
+    <item>
+    <Title><![CDATA[%s]]></Title> 
+    <Description><![CDATA[%s]]></Description>
+    <PicUrl><![CDATA[%s]]></PicUrl>
+    <Url><![CDATA[%s]]></Url>
+    </item>
+    </Articles>
+    </xml> ";
+
+    return sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+}
+
 function insertOpenId($openId) {
     if (empty($openId)) {
         return false;
@@ -152,7 +158,7 @@ function insertOpenId($openId) {
     $mydb = new mysql();
     //看是否有数据  
 
-    $sql = "select p_di from weixin_attention where delated =0 and openid = '" . $openId . "'";
+    $sql = "select p_id from weixin_attention where delated =0 and openid = '" . $openId . "'";
     $res = $mydb->execute($sql);
     $res = $mydb->fetch_assoc($res);
     if ($res) {//update
