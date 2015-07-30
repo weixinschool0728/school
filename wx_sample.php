@@ -13,7 +13,6 @@ $access_token = getAccessToken(1);
 
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
-$postObj = "";
 
 class wechatCallbackapiTest {
 
@@ -44,6 +43,7 @@ class wechatCallbackapiTest {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
 
             $wxData = array();
+            $wxData['postObj']=$postObj;
             $wxData['fromUsername'] = $postObj->FromUserName;
             $wxData['toUsername'] = $postObj->ToUserName;
             $wxData['keyword'] = trim($postObj->Content);
@@ -181,13 +181,14 @@ function typeText($wxData) {
 }
 
 function typeEvent($wxData) {
-    file_put_contents("./wx_samresponseMsgpostStrtoMSYTYPE->event.txt", json_encode($wxData));
     switch ($wxData['event']) {
         case "subscribe":
             //发送图文消息
-            $resultStr = textMessage($wxData,"感谢您的关注");
+            $resultStr = textMessage($wxData,"感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
             break;
         case "unsubscribe":
+            //t推送给管理员
+            $wxData['fromUsername']="oC62huMMqGoRhQfwBqX3w_ukxuU4";
             $resultStr = textMessage($wxData,"感谢您的关注");
             break;
         default:
