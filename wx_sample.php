@@ -9,7 +9,7 @@ define("TOKEN", "weixin");
 
 // $weixinData=array();
 include './includefiles.php';
-$access_token = getAccessToken(1);
+
 
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
@@ -31,9 +31,7 @@ class wechatCallbackapiTest {
     public function responseMsg() {
         //get post data, May be due to the different environments
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
-
-        file_put_contents("./wx_samresponseMsg.txt", json_encode($GLOBALS));
-        file_put_contents("./wx_samresponseMsgpostStr.txt", json_encode($postStr));
+//        file_put_contents("./wx_samresponseMsg.txt", json_encode($GLOBALS));
 
         //extract post data
         if (!empty($postStr)) {
@@ -162,7 +160,7 @@ function insertOpenId($openId) {
 function typeText($wxData) {
     if (!empty($wxData['keyword'])) {
         //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
-        file_put_contents("./keyword.txt", $wxData['keyword']);
+        
         switch ($wxData['keyword']) {
             case "摇一摇":
                 //发送图文消息
