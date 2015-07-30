@@ -6,6 +6,7 @@
 //define your token
 define("TOKEN", "weixin");
 // $weixinData=array();
+include './includefiles.php';
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
 
@@ -44,10 +45,11 @@ class wechatCallbackapiTest {
             $wxData = array();
 
             $wxData['fromUsername'] = $postObj->FromUserName;
-            $wxData['oUsername'] = $postObj->ToUserName;
+            $wxData['toUsername'] = $postObj->ToUserName;
             $wxData['keyword'] = trim($postObj->Content);
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
+            $contentStr = "moren";
             $textTpl = "<xml>
 							<ToUserName><![CDATA[%s]]></ToUserName>
 							<FromUserName><![CDATA[%s]]></FromUserName>
@@ -56,6 +58,9 @@ class wechatCallbackapiTest {
 							<Content><![CDATA[%s]]></Content>
 							<FuncFlag>0</FuncFlag>
 							</xml>";
+            
+            //数据插入
+            insertOpenId($wxData['fromUsername']);
             if (!empty($wxData['keyword'])) {
                 //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
 
@@ -77,12 +82,16 @@ class wechatCallbackapiTest {
                             </item>
                             </Articles>
                             </xml> ";
-                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", "http://www.baidu.com");
+
+                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                         echo $resultStr;
-                        exit;
+//                        exit;
                         break;
                     case "投票":
-
+                        $contentStr = "投票";
+                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
+                        echo $resultStr;
+                        exit;
                         break;
                     default:
                         break;
@@ -91,12 +100,13 @@ class wechatCallbackapiTest {
 
 
                 $wxData['msgType'] = "text";
-                $contentStr = "Welcome to wechat world!您的输入类型为：" . $MsgType . $keyword . $_SESSION['content']
-                        . "---" . $fromUsername;
+                $contentStr = "Welcome to wechat world!您的输入类型为：" . $wxData['msgType'] . $wxData['keyword']
+                        . "-11--" . $wvData['fromUsername'];
             } else {
-                $contentStr = "Welcome to wechat world!您的输入类型为：" . $MsgType . $keyword . $_SESSION['content'];
+                $contentStr = "Welcome to wechat world!您的输入类型为：" . $wxData['msgType'] . $wxData['keyword']
+                        . "-22--" . $wvData['fromUsername'];
             }
-            $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+            $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
             echo $resultStr;
         } else {
             echo "";
@@ -131,7 +141,34 @@ class wechatCallbackapiTest {
 }
 
 //function 
-function sendMess(){
+function sendMess() {
     
 }
+
+function insertOpenId($openId) {
+    if (empty($openId)) {
+        return false;
+    }
+    $mydb = new mysql();
+    //看是否有数据  
+
+    $sql = "select p_di from weixin_attention where delated =0 and openid = '" . $openId . "'";
+    $res = $mydb->execute($sql);
+    $res = $mydb->fetch_assoc($res);
+    if ($res) {//update
+        $data = array(
+            'update' => time(),
+        );
+        $mydb->update("weixin_attention", $data, "p_id = " . $res[0]['p_id']);
+    } else {//insert   username 需要  调用方法
+        $data = array(
+            'openid' => $openId,
+            'username' => $openId,
+            'created' => time(),
+        );
+        $mydb->insert("weixin_attention", $data);
+    }
+    return true;
+}
+
 ?>
