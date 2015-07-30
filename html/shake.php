@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>HTML5 手机摇一摇</title>  
+        <title>手机摇一摇</title>  
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="./js/jquery.min.js"></script>
@@ -42,7 +42,7 @@ and open the template in the editor.
         </script>  
     </head>
     <body>
-        HTML 5 手机摇一摇，在手机上运行的。 
+        手机摇一摇。 
         <div id="info">
 
 
