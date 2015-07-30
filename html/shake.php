@@ -9,6 +9,7 @@ and open the template in the editor.
         <title>HTML5 手机摇一摇</title>  
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./js/jquery.min.js"></script>
         <script type="text/javascript">
             var color = new Array('#fff', '#ff0', '#f00', '#000', '#00f', '#0ff');
             if (window.DeviceMotionEvent) {
