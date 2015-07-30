@@ -22,10 +22,9 @@ and open the template in the editor.
                     y = acceleration.y;
                     if (Math.abs(x - lastX) > speed || Math.abs(y - lastY) > speed) {
                         //这里面写异步加载处理  减少服务器压力   休眠2 秒钟
-                        var dataobj=new Date();
-                        var start = dataobj.getTime();
+                        var start = new Date().getTime();
                         while (true) {
-                            if (dataobj.getTime() - start > 2000)
+                            if (new Date().getTime() - start > 2000)
                                 break;
                         }
                         $.getJSON("../control/shake.php?id=" + id, function (data) {
