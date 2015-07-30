@@ -1,5 +1,6 @@
 <?php
 
+error_reporting(0);
 /**
  * wechat php test
  */
@@ -12,6 +13,7 @@ $access_token = getAccessToken(1);
 
 $wechatObj = new wechatCallbackapiTest();
 $wechatObj->valid();
+$postObj = "";
 
 class wechatCallbackapiTest {
 
@@ -40,15 +42,15 @@ class wechatCallbackapiTest {
               the best way is to check the validity of xml by yourself */
             libxml_disable_entity_loader(true);
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $wxData = array();
 
+            $wxData = array();
             $wxData['fromUsername'] = $postObj->FromUserName;
             $wxData['toUsername'] = $postObj->ToUserName;
             $wxData['keyword'] = trim($postObj->Content);
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
             $contentStr = "";
-            $textTpl = "<xml>
+            $wxData['textTpl'] = "<xml>
 							<ToUserName><![CDATA[%s]]></ToUserName>
 							<FromUserName><![CDATA[%s]]></FromUserName>
 							<CreateTime>%s</CreateTime>
@@ -59,39 +61,21 @@ class wechatCallbackapiTest {
 
             //数据插入
             insertOpenId($wxData['fromUsername']);
-            
-            //事件处理
-            if($wxData['MsgType']){
-                
-            }
-            if (!empty($wxData['keyword'])) {
-                //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
-                file_put_contents("./keyword.txt", $wxData['keyword']);
-                switch ($wxData['keyword']) {
-                    case "摇一摇":
-                        //发送图文消息
-                        $resultStr = yaoyiyao($wxData);
-                        break;
-                    case "投票":
 
-                        $contentStr = "投票";
-                        $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
-                        file_put_contents("./toupiao.txt", $resultStr);
+            //事件处理
+            if ($wxData['MsgType']) {
+                switch ($wxData['MsgType']) {
+                    case "text":
+                        typeText($wxData);
+                        break;
+                    case "event":
+                        $wxData['event'] = trim($postObj->Event);
+                        typeEvent($wxData);
                         break;
                     default:
-                        //其他文职消息， 可以推送给管理员
-
                         break;
                 }
-                echo $resultStr;
-                exit;
-            } else {
-                $contentStr = "Welcome to wechat world!您的输入类型为：" . $wxData['msgType'] . $wxData['keyword']
-                        . "-22--" . $wvData['fromUsername'];
             }
-            $resultStr = sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], $wxData['msgType'], $contentStr);
-            echo $resultStr;
-            exit;
         } else {
             echo "";
             exit;
@@ -173,6 +157,50 @@ function insertOpenId($openId) {
         $mydb->insert("weixin_attention", $data);
     }
     return true;
+}
+
+function typeText($wxData) {
+    if (!empty($wxData['keyword'])) {
+        //最好是用$MsgType来判断， f否则有可能无法处理用户的其他输入
+        file_put_contents("./keyword.txt", $wxData['keyword']);
+        switch ($wxData['keyword']) {
+            case "摇一摇":
+                //发送图文消息
+                $resultStr = yaoyiyao($wxData);
+                break;
+            case "投票":
+                $resultStr = yaoyiyao($wxData);
+                break;
+            default:
+                //其他文职消息， 可以推送给管理员
+                break;
+        }
+        echo $resultStr;
+        exit;
+    }
+}
+
+function typeEvent($wxData) {
+    file_put_contents("./wx_samresponseMsgpostStrtoMSYTYPE->event.txt", json_encode($wxData));
+    switch ($wxData['event']) {
+        case "subscribe":
+            //发送图文消息
+            $resultStr = textMessage($wxData,"感谢您的关注");
+            break;
+        case "unsubscribe":
+            $resultStr = textMessage($wxData,"感谢您的关注");
+            break;
+        default:
+            //其他文职消息， 可以推送给管理员
+            break;
+    }
+    echo $resultStr;
+    exit;
+}
+
+function textMessage($wxData,$wxContent){
+
+    return sprintf($wxData['textTpl'], $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "text", $wxContent);
 }
 
 ?>
