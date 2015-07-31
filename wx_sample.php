@@ -11,23 +11,18 @@ include "./weixin/Message.php";
 
 $wechatObj = new wechatCallbackapiTest();
 
-//$wechatObj->valid();
 
 class wechatCallbackapiTest {
 
     private $message = null;
+    private $accessToken = null;
+    private $openid = null;
 
     function __construct() {
-//        $this->getselfAccess_token();
+        $this->accessToken = getselfAccess_token();
         $this->message = new Message();
         $this->valid();
     }
-
-//    function getselfAccess_token() {
-//        if (is_null(self::$access_token)) {
-//            self::$access_token = getAccessToken(WEI_ID);
-//        }
-//    }
 
     public function valid() {
         $echoStr = $_GET["echostr"];
@@ -57,6 +52,7 @@ class wechatCallbackapiTest {
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
             $contentStr = "";
+            $this->openid = $wxData['fromUsername'];
             //数据插入e
 
             insertOpenId($wxData['fromUsername']);
