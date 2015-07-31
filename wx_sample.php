@@ -7,7 +7,7 @@ error_reporting(0);
 //define your token
 define("TOKEN", "weixin");
 include './includefiles.php';
-
+include "./weixin/Message.php";
 
 $wechatObj = new wechatCallbackapiTest();
 
@@ -15,18 +15,19 @@ $wechatObj = new wechatCallbackapiTest();
 
 class wechatCallbackapiTest {
 
-    public static $access_token = null;
+    private $message = null;
 
     function __construct() {
-        $this->getselfAccess_token();
+//        $this->getselfAccess_token();
+        $this->message = new Message();
         $this->valid();
     }
 
-    function getselfAccess_token() {
-        if (is_null(self::$access_token)) {
-            self::$access_token = getAccessToken(WEI_ID);
-        }
-    }
+//    function getselfAccess_token() {
+//        if (is_null(self::$access_token)) {
+//            self::$access_token = getAccessToken(WEI_ID);
+//        }
+//    }
 
     public function valid() {
         $echoStr = $_GET["echostr"];
@@ -56,15 +57,6 @@ class wechatCallbackapiTest {
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
             $contentStr = "";
-            $wxData['textTpl'] = "<xml>
-							<ToUserName><![CDATA[%s]]></ToUserName>
-							<FromUserName><![CDATA[%s]]></FromUserName>
-							<CreateTime>%s</CreateTime>
-							<MsgType><![CDATA[%s]]></MsgType>
-							<Content><![CDATA[%s]]></Content>
-							<FuncFlag>0</FuncFlag>
-							</xml>";
-
             //数据插入
             insertOpenId($wxData['fromUsername']);
 
@@ -114,28 +106,82 @@ class wechatCallbackapiTest {
 
 }
 
+function typeText($wxData) {
+    if (!empty($wxData['keyword'])) {
+        switch ($wxData['keyword']) {
+            case "摇一摇":
+                //发送图文消息
+                $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+                break;
+            case "投票":
+                $resultStr = $this->message->danTuWen($wxData, "投票", "为您心仪的小朋友加加油", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+                break;
+            case "扫一扫":
+                $resultStr = $this->message->danTuWen($wxData, "扫一扫", "一起来扫扫吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+                break;
+            default:
+                //其他文职消息， 可以推送给管理员
+                $resultStr = $this->message->textMessage($wxData, "感谢您的关注！不知道输什么？ 可以试试 摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
+                break;
+        }
+        echo $resultStr;
+        exit;
+    }
+}
+
+function typeEvent($wxData) {
+    switch ($wxData['event']) {
+        case "subscribe":
+            //发送图文消息
+            $resultStr = $this->message->textMessage($wxData, "感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
+            break;
+        case "unsubscribe":
+            //t推送给管理员
+            $wxData['fromUsername'] = "oC62huMMqGoRhQfwBqX3w_ukxuU4";
+            $resultStr = $this->message->textMessage($wxData, "感谢您的关注");
+            break;
+        case "CLICK":
+            //自定义菜单的点击事件
+            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
+            eventClick($wxData);
+            break;
+        case "VIEW":
+            //自定义菜单的视图连接事件  主要是    获取openId
+//            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
+//            eventClick($wxData);  
+            break;
+        default:
+            //其他文职消息， 可以推送给管理员
+            break;
+    }
+    echo $resultStr;
+    exit;
+}
+
+function eventClick($wxData) {
+//    $wxData['EventKey']   根据自定义菜单来判断
+    switch ($wxData['EventKey']) {
+        case 0:
+            $resultStr = $this->message->textMessage($wxData, "点击了 0 号菜单");
+            break;
+        case 1:
+            $resultStr = $this->message->textMessage($wxData, "点击了 1 号菜单");
+            break;
+        case 2:
+            $resultStr = $this->message->textMessage($wxData, "点击了 2 号菜单");
+            break;
+
+        default:
+            break;
+
+            echo $resultStr;
+            exit;
+    }
+}
+
 //function 
 function sendMess() {
     
-}
-
-function yaoyiyao($wxData) {
-    $textTpl = "<xml>
-    <ToUserName><![CDATA[%s]]></ToUserName>
-    <FromUserName><![CDATA[%s]]></FromUserName>
-    <CreateTime>%s</CreateTime>
-    <MsgType><![CDATA[%s]]></MsgType>
-    <ArticleCount>1</ArticleCount>
-    <Articles>
-    <item>
-    <Title><![CDATA[%s]]></Title> 
-    <Description><![CDATA[%s]]></Description>
-    <PicUrl><![CDATA[%s]]></PicUrl>
-    <Url><![CDATA[%s]]></Url>
-    </item>
-    </Articles>
-    </xml> ";
-    return sprintf($textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", "摇一摇", "拿起你的手机一起来摇一摇", "http://mp.weixin.qq.com/wiki/static/assets/ac9be2eafdeb95d50b28fa7cd75bb499.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
 }
 
 function insertOpenId($openId) {
@@ -161,80 +207,6 @@ function insertOpenId($openId) {
         $mydb->insert("weixin_attention", $data);
     }
     return true;
-}
-
-function typeText($wxData) {
-    if (!empty($wxData['keyword'])) {
-        switch ($wxData['keyword']) {
-            case "摇一摇":
-                //发送图文消息
-                $resultStr = yaoyiyao($wxData);
-                break;
-            case "投票":
-                $resultStr = yaoyiyao($wxData);
-                break;
-            default:
-                //其他文职消息， 可以推送给管理员
-                $resultStr = textMessage($wxData, "感谢您的关注！不知道输什么？ 可以试试 摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
-                break;
-        }
-        echo $resultStr;
-        exit;
-    }
-}
-
-function typeEvent($wxData) {
-    switch ($wxData['event']) {
-        case "subscribe":
-            //发送图文消息
-            $resultStr = textMessage($wxData, "感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
-            break;
-        case "unsubscribe":
-            //t推送给管理员
-            $wxData['fromUsername'] = "oC62huMMqGoRhQfwBqX3w_ukxuU4";
-            $resultStr = textMessage($wxData, "感谢您的关注");
-            break;
-        case "CLICK":
-            //自定义菜单的点击事件
-            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
-            eventClick($wxData);
-            break;
-        case "VIEW":
-            //自定义菜单的视图连接事件  主要是    获取openId
-//            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
-//            eventClick($wxData);  
-            break;
-        default:
-            //其他文职消息， 可以推送给管理员
-            break;
-    }
-    echo $resultStr;
-    exit;
-}
-
-function eventClick($wxData) {
-//    $wxData['EventKey']   根据自定义菜单来判断
-    switch ($wxData['EventKey']) {
-        case 0:
-            $resultStr = textMessage($wxData, "点击了 0 号菜单");
-            break;
-        case 1:
-            $resultStr = textMessage($wxData, "点击了 1 号菜单");
-            break;
-        case 2:
-            $resultStr = textMessage($wxData, "点击了 2 号菜单");
-            break;
-
-        default:
-            break;
-
-            echo $resultStr;
-            exit;
-    }
-}
-
-function textMessage($wxData, $wxContent) {
-    return sprintf($wxData['textTpl'], $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "text", $wxContent);
 }
 
 ?>
