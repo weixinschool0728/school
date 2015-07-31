@@ -36,7 +36,6 @@ function getAccessToken($wei_id = 1) {
     $mydb =db::getInstance();
     $sql = "select * from weixin_access_token where delated=0 and wei_id=" . $wei_id;
     $accessTokenArr = $mydb->selectOne($sql);
-    var_dump($accessTokenArr);
     if (empty($accessTokenArr) || time() - $accessTokenArr["created"] > 7000 || empty($accessTokenArr['access_token'])) {
         //重新获取token  并存数据库
         $accessTokenArr = getAccessTokenByUrl();
