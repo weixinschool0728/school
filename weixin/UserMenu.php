@@ -9,40 +9,89 @@
 include_once '../Common/mysql/db.php';
 include_once '../Common/config/config.php';
 include_once '../Common/functions/functions.php';
-$user = new UserMenu();
-$access = getAccessToken(1);
-$url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" . $access;
-
-
-echo $url;
-$data = array(
-    'user' => "sadasd",
-    'user1' => "sadasd",
-    'user2' => "sadasd",
-);
-var_dump($user->httpsPost($url, $data));
 
 class UserMenu {
 
-    function httpsPost($url, $data) { // 模拟提交数据函数
-        $curl = curl_init(); // 启动一个CURL会话
-        curl_setopt($curl, CURLOPT_URL, $url); // 要访问的地址
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); // 从证书中检查SSL加密算法是否存在
-        curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); // 模拟用户使用的浏览器
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1); // 使用自动跳转
-        curl_setopt($curl, CURLOPT_AUTOREFERER, 1); // 自动设置Referer
-        curl_setopt($curl, CURLOPT_POST, 1); // 发送一个常规的Post请求
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data); // Post提交的数据包
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30); // 设置超时限制防止死循环
-        curl_setopt($curl, CURLOPT_HEADER, 0); // 显示返回的Header区域内容
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); // 获取的信息以文件流的形式返回
-        $tmpInfo = curl_exec($curl); // 执行操作
-        if (curl_errno($curl)) {
-            return false;
+    private $url = null;
+    private $access = null;
+    private $returns = array(
+        "state" => 0,
+        "message" => ""
+    );
+
+    function __construct() {
+        $this->access = getAccessToken(WEI_ID);
+    }
+
+    function create() {
+
+        $this->url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" . $this->access;
+        $data = array(
+            "button" => array(
+                array(
+                    "type" => "click",
+                    "name" => "摇一摇",
+                    "key" => "YAOYIYAO"
+                ),
+                array(
+                    "name" => "投票",
+                    'sub_button' => array(
+                        array(
+                            "type" => "click",
+                            "name" => "投票",
+                            "key" => "TOUPIAO"
+                        ),
+                        array(
+                            "type" => "scancode_waitmsg",
+                            "name" => "扫一扫",
+                            "key" => "SAOYISAO",
+                            "sub_button" => '',
+                        ),
+                    ),
+                ),
+                array(
+                    "type" => "view",
+                    "name" => "关于我们",
+                    "url" => "http://www.aixianxing.com"
+                ),
+            ),
+        );
+
+        $data = json_encode($data);
+        $res = httpsPost($this->url, $data);
+        if ($res) {
+            $res = json_decode($res, true);
+            //调用全局代码判断结果
+            switch ($res["errcode"]) {
+                case 0:
+                    $this->returns['message'] = "菜单创建完毕,您可以重新关注来获取新的菜单。";
+                    break;
+                case 40018:
+                    $this->returns['message'] = "菜单字段太长。";
+                    $this->returns['state'] = "1";
+                    break;
+                case 48001:
+                    $this->returns['message'] = "api功能未授权，请确认公众号已获得该接口，"
+                            . "可以在公众平台官网-开发者中心页中查看接口权限。";
+                    $this->returns['state'] = "1";
+                    break;
+                case 40014:
+                    $this->returns['message'] = "不合法的access_token，"
+                            . "请开发者认真比对access_token的有效性（如是否过期），"
+                            . "或查看是否正在为恰当的公众号调用接口";
+                    $this->returns['state'] = "1";
+                    break;
+
+                default:
+                    $this->returns['message'] = "errcode:" . $res["errcode"] . "未知错误，请与管理员联系QQ:772321344";
+                    $this->returns['state'] = "1";
+                    break;
+            }
         }
-        curl_close($curl); // 关闭CURL会话
-        return $tmpInfo; // 返回数据
+        echo json_encode($this->returns);
     }
 
 }
+
+$user = new UserMenu();
+$user->create();
