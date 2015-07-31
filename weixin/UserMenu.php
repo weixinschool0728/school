@@ -45,7 +45,7 @@ class UserMenu {
                             "type" => "scancode_waitmsg",
                             "name" => "扫一扫",
                             "key" => "SAOYISAO",
-                            "sub_button" => '',
+                            "sub_button" => array(),
                         ),
                     ),
                 ),
@@ -57,7 +57,7 @@ class UserMenu {
             ),
         );
 
-        $data = json_encode($data);
+        $data = jsonencode($data);
         $res = httpsPost($this->url, $data);
         if ($res) {
             $res = json_decode($res, true);

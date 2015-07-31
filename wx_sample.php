@@ -1,6 +1,5 @@
 <?php
 
-error_reporting(0);
 /**
  * wechat php test
  */
@@ -8,28 +7,28 @@ error_reporting(0);
 define("TOKEN", "weixin");
 include './includefiles.php';
 include "./weixin/Message.php";
-
 $wechatObj = new wechatCallbackapiTest();
 
-
 class wechatCallbackapiTest {
-
     private $message = null;
     private $accessToken = null;
     private $openid = null;
 
-    function __construct() {
-        $this->accessToken = getselfAccess_token();
+	    function __construct() {
+//        $this->accessToken = getAccessToken();
         $this->message = new Message();
-        $this->valid();
+                $this->valid();
     }
-
     public function valid() {
         $echoStr = $_GET["echostr"];
+
         //valid signature , option
         if ($this->checkSignature()) {
+            echo $echoStr;
 
-            $this->responseMsg();
+			$this->responseMsg();
+//            file_put_contents("./wx_samresponseMsg.txt", $echoStr);
+
 
             exit;
         }
@@ -54,7 +53,6 @@ class wechatCallbackapiTest {
             $contentStr = "";
             $this->openid = $wxData['fromUsername'];
             //数据插入e
-
             insertOpenId($wxData['fromUsername']);
 
             //事件处理
@@ -175,11 +173,8 @@ class wechatCallbackapiTest {
     }
 
 }
-
 //function 
-function sendMess() {
-    
-}
+
 
 function insertOpenId($openId) {
     if (empty($openId)) {
@@ -205,5 +200,4 @@ function insertOpenId($openId) {
     }
     return true;
 }
-
 ?>
