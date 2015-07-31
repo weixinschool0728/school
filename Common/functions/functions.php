@@ -33,7 +33,7 @@ function br() {
 
 function getAccessToken($wei_id = 1) {
 
-    $mydb =db::getInstance();
+    $mydb = db::getInstance();
     $sql = "select * from weixin_access_token where delated=0 and wei_id=" . $wei_id;
     $accessTokenArr = $mydb->selectOne($sql);
     if (empty($accessTokenArr) || time() - $accessTokenArr["created"] > 7000 || empty($accessTokenArr['access_token'])) {
@@ -62,4 +62,16 @@ function getAccessTokenByUrl() { // php kaiqi openssl扩展
             . "client_credential&appid=" . APPID . "&secret=" . APPSECRET;
     $accessTokenArr = json_decode(file_get_contents($url), true);
     return $accessTokenArr;
+}
+
+function makeCNo($number, $prefix = "sc", $length = "6") {
+
+    if (empty($number) || strlen($number) == 0) {
+        return false;
+    }
+    if (strlen($number) >= $length) {
+        return $prefix . $number;
+    }
+    $str = str_repeat('0', $length - strlen($number));
+    return $prefix . $str . $number;
 }
