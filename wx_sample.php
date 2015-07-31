@@ -6,19 +6,30 @@ error_reporting(0);
  */
 //define your token
 define("TOKEN", "weixin");
-
-// $weixinData=array();
 include './includefiles.php';
 
 
 $wechatObj = new wechatCallbackapiTest();
-$wechatObj->valid();
+
+//$wechatObj->valid();
 
 class wechatCallbackapiTest {
 
+    public static $access_token = null;
+
+    function __construct() {
+        $this->getselfAccess_token();
+        $this->valid();
+    }
+
+    function getselfAccess_token() {
+        if (is_null(self::$access_token)) {
+            self::$access_token = getAccessToken(WEI_ID);
+        }
+    }
+
     public function valid() {
         $echoStr = $_GET["echostr"];
-
         //valid signature , option
         if ($this->checkSignature()) {
 
@@ -31,8 +42,6 @@ class wechatCallbackapiTest {
     public function responseMsg() {
         //get post data, May be due to the different environments
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
-//        file_put_contents("./wx_samresponseMsg.txt", json_encode($GLOBALS));
-        //extract post data
         if (!empty($postStr)) {
             /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
               the best way is to check the validity of xml by yourself */
@@ -133,17 +142,16 @@ function insertOpenId($openId) {
     if (empty($openId)) {
         return false;
     }
-    $mydb = new mysql();
+    $mydb = db::getInstance();
     //看是否有数据  
 
     $sql = "select p_id from weixin_attention where delated =0 and openid = '" . $openId . "'";
-    $res = $mydb->execute($sql);
-    $res = $mydb->fetch_assoc($res);
+    $res = $mydb->selectOne($sql);
     if ($res) {//update
         $data = array(
             'update' => time(),
         );
-        $mydb->update("weixin_attention", $data, "p_id = " . $res[0]['p_id']);
+        $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
     } else {//insert   username 需要  调用方法
         $data = array(
             'openid' => $openId,
