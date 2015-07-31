@@ -36,7 +36,7 @@ class Message {
             </item>
             </Articles>
             </xml> ";
-        return sprintf($this->textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", $title, $description, $description, $linkUrl);
+        return sprintf($this->textTpl, $wxData['fromUsername'], $wxData['toUsername'], $wxData['time'], "news", $title, $description, $imageUrl, $linkUrl);
     }
 
 }
