@@ -114,6 +114,11 @@ class wechatCallbackapiTest {
                 $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
                 $this->eventClick($wxData);
                 break;
+            case "scancode_waitmsg":
+                //自定义菜单的扫码事件
+                $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
+                $this->eventscancodeWaitmsg($wxData);
+                break;
             case "VIEW":
                 //自定义菜单的视图连接事件  主要是    获取openId
 //            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
@@ -127,14 +132,34 @@ class wechatCallbackapiTest {
         exit;
     }
 
+    function eventscancodeWaitmsg($wxData) {
+//    $wxData['EventKey']   根据自定义菜单来判断
+        $ScanCodeInfo=$wxData['postObj']->ScanCodeInfo;
+        $ScanResult=$ScanCodeInfo->ScanResult;
+        switch ($wxData['EventKey']) {
+            case "SAOYISAO":
+                $resultStr = $this->message->danTuWen($wxData, "扫一扫","没事儿就扫一扫","https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png",$ScanResult."&opid=".$this->openid);
+                break;
+            case "":
+                $resultStr = $this->message->textMessage($wxData, "点击了 投票 号菜单");
+                break;
+
+            default:
+                break;
+
+
+        }
+              echo $resultStr;
+                exit;
+    }
     function eventClick($wxData) {
 //    $wxData['EventKey']   根据自定义菜单来判断
         switch ($wxData['EventKey']) {
-            case 0:
-                $resultStr = $this->message->textMessage($wxData, "点击了 0 号菜单");
+            case "YAOYIYAO":
+                $resultStr = $this->message->textMessage($wxData, "点击了 摇一摇 号菜单");
                 break;
-            case 1:
-                $resultStr = $this->message->textMessage($wxData, "点击了 1 号菜单");
+            case "TOUPIAO":
+                $resultStr = $this->message->textMessage($wxData, "点击了 投票 号菜单");
                 break;
             case 2:
                 $resultStr = $this->message->textMessage($wxData, "点击了 2 号菜单");
@@ -143,9 +168,10 @@ class wechatCallbackapiTest {
             default:
                 break;
 
-                echo $resultStr;
-                exit;
+
         }
+                        echo $resultStr;
+                exit;
     }
 
     private function checkSignature() {
