@@ -2,7 +2,7 @@
 
 include '../Common/config/config.php';
 include '../Common/functions/functions.php';
-include '../Common/mysql/mysql.php';
+//include '../Common/mysql/db.php';
 
 class JSSDK {
 
@@ -59,7 +59,7 @@ class JSSDK {
         $data = json_decode(file_get_contents($filename));
 
         if ($data->expire_time < time()) {
-            $this->accessToken = getAccessToken(1);
+            $this->accessToken = getAccessToken(WEI_ID);
 //     $accessToken = $this->getAccessToken();
             // 如果是企业号用以下 URL 获取 ticket
             // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
