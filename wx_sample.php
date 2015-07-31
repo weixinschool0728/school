@@ -15,9 +15,10 @@ class wechatCallbackapiTest {
     private $openid = null;
 
 	    function __construct() {
-//        $this->accessToken = getAccessToken();
+        $this->accessToken = getAccessToken();
         $this->message = new Message();
-                $this->valid();
+                
+        $this->valid();
     }
     public function valid() {
         $echoStr = $_GET["echostr"];
@@ -141,10 +142,11 @@ class wechatCallbackapiTest {
                 $resultStr = $this->message->danTuWen($wxData, "扫一扫","没事儿就扫一扫","https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png",$ScanResult."&opid=".$this->openid);
                 break;
             case "":
-                $resultStr = $this->message->textMessage($wxData, "点击了 投票 号菜单");
+                $resultStr = $this->message->textMessage($wxData, ScanResult);
                 break;
 
             default:
+                $resultStr = $this->message->textMessage($wxData, ScanResult);
                 break;
 
 
@@ -156,16 +158,17 @@ class wechatCallbackapiTest {
 //    $wxData['EventKey']   根据自定义菜单来判断
         switch ($wxData['EventKey']) {
             case "YAOYIYAO":
-                $resultStr = $this->message->textMessage($wxData, "点击了 摇一摇 号菜单");
+                $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                 break;
             case "TOUPIAO":
-                $resultStr = $this->message->textMessage($wxData, "点击了 投票 号菜单");
+                $resultStr = $this->message->danTuWen($wxData, "投票","为你喜欢的小伙伴投上一票吧，","https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png",$_SERVER['SERVER_NAME'] . "/html/pointlike.php?opid=".$this->openid);
                 break;
             case 2:
                 $resultStr = $this->message->textMessage($wxData, "点击了 2 号菜单");
                 break;
 
             default:
+                $resultStr = $this->message->textMessage($wxData, "竟然没有你要的选项？");
                 break;
 
 
