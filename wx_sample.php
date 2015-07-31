@@ -7,16 +7,19 @@
 define("TOKEN", "weixin");
 include './includefiles.php';
 include "./weixin/Message.php";
+include "./weixin/UserInfo.php";
 $wechatObj = new wechatCallbackapiTest();
 
 class wechatCallbackapiTest {
     private $message = null;
     private $accessToken = null;
     private $openid = null;
+//    private $userInfo = null;
 
 	    function __construct() {
         $this->accessToken = getAccessToken();
         $this->message = new Message();
+//        $this->userInfo = new UserInfo($this->accessToken);
                 
         $this->valid();
     }
@@ -220,9 +223,11 @@ function insertOpenId($openId) {
         );
         $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
     } else {//insert   username 需要  调用方法
+//        $user=$this->userInfo->getUserInfo($openId);
+        //$user['nickname'] 
         $data = array(
             'openid' => $openId,
-            'username' => $openId,
+            'username' =>$openId,
             'created' => time(),
         );
         $mydb->insert("weixin_attention", $data);

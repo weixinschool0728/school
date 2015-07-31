@@ -19,8 +19,12 @@ class UserMenu {
         "message" => ""
     );
 
-    function __construct() {
-        $this->access = getAccessToken(WEI_ID);
+    function __construct($accessToken = '') {
+        if ($accessToken == "") {
+            $this->access = getAccessToken(WEI_ID);
+        } else {
+            $this->access = $accessToken;
+        }
     }
 
     function create() {
@@ -92,6 +96,3 @@ class UserMenu {
     }
 
 }
-
-$user = new UserMenu();
-$user->create();
