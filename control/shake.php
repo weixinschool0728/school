@@ -1,10 +1,5 @@
 <?php
 date_default_timezone_set('PRC'); //设置中国时区 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 include_once '../Common/mysql/db.php';
 $db = db::getInstance();
 $id = isset($_GET['id']) ? $_GET['id'] : '-1';
