@@ -33,10 +33,11 @@ function br() {
 
 function getAccessToken($wei_id = 1) {
 
-    $mydb = new mysql();
+    $mydb =db::getInstance();
     $sql = "select * from weixin_access_token where delated=0 and wei_id=" . $wei_id;
-    $accessTokenArr = $mydb->select($sql);
-    if (empty($accessTokenArr) || time() - $accessTokenArr[0]["created"] > 7000 || empty($accessTokenArr[0]['access_token'])) {
+    $accessTokenArr = $mydb->selectOne($sql);
+    var_dump($accessTokenArr);
+    if (empty($accessTokenArr) || time() - $accessTokenArr["created"] > 7000 || empty($accessTokenArr['access_token'])) {
         //重新获取token  并存数据库
         $accessTokenArr = getAccessTokenByUrl();
         if (isset($accessTokenArr['access_token'])) {
@@ -53,7 +54,7 @@ function getAccessToken($wei_id = 1) {
             return false;
         }
     } else {
-        return $accessTokenArr[0]['access_token'];
+        return $accessTokenArr['access_token'];
     }
 }
 
