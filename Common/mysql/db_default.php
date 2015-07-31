@@ -2,6 +2,7 @@
 
 class db {
 
+    private $is_log = true;
     private $host = 'localhost';
     private $db_name = 'weixin_school';
     private $user_name = 'root';
@@ -13,7 +14,7 @@ class db {
     private function __construct() {
         $this->conn = mysqli_connect($this->host, $this->user_name, $this->password);
         if (!mysqli_select_db($this->conn, $this->db_name)) {
-            return false;
+            echo "失败";
         };
         mysqli_query($this->conn, 'set names utf8');
     }
@@ -30,6 +31,9 @@ class db {
      */
     public function selectAll($sql) {
         self::$sql = $sql;
+        if ($this->is_log) {
+            $this->write_log(self::$sql);
+        }
         $result = mysqli_query($this->conn, self::$sql);
         $resuleRow = array();
         while ($row = mysqli_fetch_assoc($result)) {
@@ -40,6 +44,9 @@ class db {
 
     public function selectOne($sql) {
         self::$sql = $sql;
+        if ($this->is_log) {
+            $this->write_log(self::$sql);
+        }
         $result = mysqli_query($this->conn, self::$sql);
         if ($result) {
             $row = mysqli_fetch_assoc($result);
@@ -62,6 +69,9 @@ class db {
         $values = rtrim($values, ',');
         $datas = rtrim($datas, ',');
         self::$sql = "INSERT INTO  {$table} ({$values}) VALUES ({$datas})";
+        if ($this->is_log) {
+            $this->write_log(self::$sql);
+        }
         if (mysqli_query($this->conn, self::$sql)) {
             return mysqli_insert_id($this->conn);
         } else {
@@ -84,7 +94,9 @@ class db {
             $updatastr = 'set ' . rtrim($updatastr, ',');
         }
         self::$sql = "update {$table} {$updatastr} {$where}";
-        echo self::$sql;
+        if ($this->is_log) {
+            $this->write_log(self::$sql);
+        }
         mysqli_query($this->conn, self::$sql);
         return mysqli_affected_rows($this->conn);
     }
@@ -97,6 +109,9 @@ class db {
             $where = " where " . $where;
         }
         self::$sql = "delete from {$table} {$where}";
+        if ($this->is_log) {
+            $this->write_log(self::$sql);
+        }
         mysqli_query($this->conn, self::$sql);
         return mysqli_affected_rows($this->conn);
     }
@@ -107,6 +122,17 @@ class db {
 
     public function __destruct() {
         $this->close();
+    }
+
+    public function write_log($sql) {
+        date_default_timezone_set('PRC'); //设置中国时区 
+        $dirname = "../log";
+        $filename = $dirname . '/' . date('Y-m-d') . ".txt";
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0777, true);
+        }
+        $d = date('Y-m-d H:i:s') . "\n";
+        file_put_contents($filename, $d . $sql . ";\n", FILE_APPEND);
     }
 
 }
