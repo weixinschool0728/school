@@ -57,7 +57,8 @@ class wechatCallbackapiTest {
             $wxData['MsgType'] = trim($postObj->MsgType);
             $wxData['time'] = time();
             $contentStr = "";
-            //数据插入
+            //数据插入e
+
             insertOpenId($wxData['fromUsername']);
 
             //事件处理
@@ -85,7 +86,7 @@ class wechatCallbackapiTest {
             switch ($wxData['keyword']) {
                 case "摇一摇":
                     //发送图文消息
-                    $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
+                    $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                     break;
                 case "投票":
                     $resultStr = $this->message->danTuWen($wxData, "投票", "为您心仪的小朋友加加油", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
@@ -110,7 +111,7 @@ class wechatCallbackapiTest {
                 $resultStr = $this->message->textMessage($wxData, "感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
                 break;
             case "unsubscribe":
-                //t推送给管理员
+                //t推送给管理员  更新 用户表  
                 $wxData['fromUsername'] = "oC62huMMqGoRhQfwBqX3w_ukxuU4";
                 $resultStr = $this->message->textMessage($wxData, "感谢您的关注");
                 break;
