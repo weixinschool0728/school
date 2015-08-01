@@ -94,6 +94,9 @@ class wechatCallbackapiTest {
                 case "扫一扫":
                     $resultStr = $this->message->danTuWen($wxData, "扫一扫", "一起来扫扫吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                     break;
+                case "js":
+                    $resultStr = $this->message->danTuWen($wxData, "js接口", "一起来扫扫吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/jsDemo.php?id=" . $wxData['fromUsername']);
+                    break;
                 default:
                     //其他文职消息， 可以推送给管理员
                     $resultStr = $this->message->textMessage($wxData, "感谢您的关注！不知道输什么？ 可以试试 摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
@@ -144,7 +147,11 @@ class wechatCallbackapiTest {
         $ScanResult = $ScanCodeInfo->ScanResult;
         switch ($wxData['EventKey']) {
             case "SAOYISAO":
-                $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
+                if(preg_match("/^(.*)(aixianxing)(.*)$/i", $ScanResult)){
+                    $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
+                }else{
+                    $resultStr = $this->message->textMessage($wxData, ScanResult);
+                }
                 break;
             case "":
                 $resultStr = $this->message->textMessage($wxData, ScanResult);
