@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-//include_once '../Common/mysql/db.php';
-//include_once '../Common/config/config.php';
-//include_once '../Common/functions/functions.php';
+include_once '../Common/mysql/db.php';
+include_once '../Common/config/config.php';
+include_once '../Common/functions/functions.php';
 
 class UserInfo {
 

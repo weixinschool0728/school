@@ -11,18 +11,20 @@ include "./weixin/UserInfo.php";
 $wechatObj = new wechatCallbackapiTest();
 
 class wechatCallbackapiTest {
+
     private $message = null;
     private $accessToken = null;
     private $openid = null;
-//    private $userInfo = null;
+    private $userInfo = null;
 
-	    function __construct() {
+    function __construct() {
         $this->accessToken = getAccessToken();
         $this->message = new Message();
-//        $this->userInfo = new UserInfo($this->accessToken);
-                
+        $this->userInfo = new UserInfo($this->accessToken);
+
         $this->valid();
     }
+
     public function valid() {
         $echoStr = $_GET["echostr"];
 
@@ -30,7 +32,7 @@ class wechatCallbackapiTest {
         if ($this->checkSignature()) {
             echo $echoStr;
 
-			$this->responseMsg();
+            $this->responseMsg();
 //            file_put_contents("./wx_samresponseMsg.txt", $echoStr);
 
 
@@ -57,7 +59,7 @@ class wechatCallbackapiTest {
             $contentStr = "";
             $this->openid = $wxData['fromUsername'];
             //数据插入e
-            insertOpenId($wxData['fromUsername']);
+            $this->insertOpenId($wxData['fromUsername']);
 
             //事件处理
             if ($wxData['MsgType']) {
@@ -138,11 +140,11 @@ class wechatCallbackapiTest {
 
     function eventscancodeWaitmsg($wxData) {
 //    $wxData['EventKey']   根据自定义菜单来判断
-        $ScanCodeInfo=$wxData['postObj']->ScanCodeInfo;
-        $ScanResult=$ScanCodeInfo->ScanResult;
+        $ScanCodeInfo = $wxData['postObj']->ScanCodeInfo;
+        $ScanResult = $ScanCodeInfo->ScanResult;
         switch ($wxData['EventKey']) {
             case "SAOYISAO":
-                $resultStr = $this->message->danTuWen($wxData, "扫一扫","没事儿就扫一扫","https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png",$ScanResult."&opid=".$this->openid);
+                $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
                 break;
             case "":
                 $resultStr = $this->message->textMessage($wxData, ScanResult);
@@ -151,12 +153,11 @@ class wechatCallbackapiTest {
             default:
                 $resultStr = $this->message->textMessage($wxData, ScanResult);
                 break;
-
-
         }
-              echo $resultStr;
-                exit;
+        echo $resultStr;
+        exit;
     }
+
     function eventClick($wxData) {
 //    $wxData['EventKey']   根据自定义菜单来判断
         switch ($wxData['EventKey']) {
@@ -164,7 +165,7 @@ class wechatCallbackapiTest {
                 $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                 break;
             case "TOUPIAO":
-                $resultStr = $this->message->danTuWen($wxData, "投票","为你喜欢的小伙伴投上一票吧，","https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png",$_SERVER['SERVER_NAME'] . "/html/pointlike.php?opid=".$this->openid);
+                $resultStr = $this->message->danTuWen($wxData, "投票", "为你喜欢的小伙伴投上一票吧，", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/pointlike.php?opid=" . $this->openid);
                 break;
             case 2:
                 $resultStr = $this->message->textMessage($wxData, "点击了 2 号菜单");
@@ -173,11 +174,9 @@ class wechatCallbackapiTest {
             default:
                 $resultStr = $this->message->textMessage($wxData, "竟然没有你要的选项？");
                 break;
-
-
         }
-                        echo $resultStr;
-                exit;
+        echo $resultStr;
+        exit;
     }
 
     private function checkSignature() {
@@ -204,34 +203,33 @@ class wechatCallbackapiTest {
         }
     }
 
+    function insertOpenId($openId) {
+        if (empty($openId)) {
+            return false;
+        }
+        $mydb = db::getInstance();
+        //看是否有数据  
+
+        $sql = "select p_id from weixin_attention where delated = 0 and openid = '" . $openId . "'";
+        $res = $mydb->selectOne($sql);
+        if ($res) {//update
+            $data = array(
+                'update' => time(),
+            );
+            $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
+        } else {//insert   username 需要  调用方法
+            $user = $this->userInfo->getUserInfo($openId);
+            $data = array(
+                'openid' => $openId,
+                'username' => $user['nickname'],
+                'created' => time(),
+            );
+            $mydb->insert("weixin_attention", $data);
+        }
+        return true;
+    }
+
 }
+
 //function 
-
-
-function insertOpenId($openId) {
-    if (empty($openId)) {
-        return false;
-    }
-    $mydb = db::getInstance();
-    //看是否有数据  
-
-    $sql = "select p_id from weixin_attention where delated =0 and openid = '" . $openId . "'";
-    $res = $mydb->selectOne($sql);
-    if ($res) {//update
-        $data = array(
-            'update' => time(),
-        );
-        $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
-    } else {//insert   username 需要  调用方法
-//        $user=$this->userInfo->getUserInfo($openId);
-        //$user['nickname'] 
-        $data = array(
-            'openid' => $openId,
-            'username' =>$openId,
-            'created' => time(),
-        );
-        $mydb->insert("weixin_attention", $data);
-    }
-    return true;
-}
 ?>
