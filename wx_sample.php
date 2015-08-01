@@ -214,7 +214,7 @@ class wechatCallbackapiTest {
         $res = $mydb->selectOne($sql);
         if ($res) {//update
             $data = array(
-                'update' => time(),
+                'updated' => time(),
             );
             $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
         } else {//insert   username 需要  调用方法
