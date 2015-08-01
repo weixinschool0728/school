@@ -95,4 +95,14 @@ class UserMenu {
         echo json_encode($this->returns);
     }
 
+    function getMenu() {
+        $this->url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" . $this->access;
+        echo file_get_contents($this->url);
+    }
+    
+    function deleteMenu(){
+        $this->url="https://api.weixin.qq.com/cgi-bin/menu/delete?access_token".$this->access;
+        echo file_get_contents($this->url);
+    }
+
 }

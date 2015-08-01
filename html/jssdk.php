@@ -1,7 +1,7 @@
 <?php
 
-include '../Common/config/config.php';
-include '../Common/functions/functions.php';
+include_once '../Common/config/config.php';
+include_once '../Common/functions/functions.php';
 //include '../Common/mysql/db.php';
 
 class JSSDK {
@@ -81,6 +81,3 @@ class JSSDK {
     }
 
 }
-
-//$jssdk = new JSSDK(APPID, APPSECRET);
-//$signPackage = $jssdk->GetSignPackage();
