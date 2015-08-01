@@ -3,7 +3,7 @@ include_once "./jssdk.php";
 $jssdk = new JSSDK(APPID, APPSECRET);
 $signPackage = $jssdk->GetSignPackage();
 ?>
-        <script src="./js/jweixin.js"> </script>
+
 <script>
   wx.config({
       debug: false,
