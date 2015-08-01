@@ -147,9 +147,13 @@ class wechatCallbackapiTest {
         $ScanResult = $ScanCodeInfo->ScanResult;
         switch ($wxData['EventKey']) {
             case "SAOYISAO":
-                if(preg_match("/^(.*)(aixianxing)(.*)$/i", $ScanResult)){
-                    $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
-                }else{
+                if (preg_match("/^(.*)(aixianxing)(.*)$/i", $ScanResult)) {
+                    if (preg_match("/^(.*)(php)$/i", $ScanResult)) {
+                        $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "?opid=" . $this->openid);
+                    } else {
+                        $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
+                    }
+                } else {
                     $resultStr = $this->message->textMessage($wxData, ScanResult);
                 }
                 break;
