@@ -19,8 +19,12 @@ class UserMenu {
         "message" => ""
     );
 
-    function __construct() {
-        $this->access = getAccessToken(WEI_ID);
+    function __construct($accessToken = '') {
+        if ($accessToken == "") {
+            $this->access = getAccessToken(WEI_ID);
+        } else {
+            $this->access = $accessToken;
+        }
     }
 
     function create() {
@@ -45,7 +49,7 @@ class UserMenu {
                             "type" => "scancode_waitmsg",
                             "name" => "扫一扫",
                             "key" => "SAOYISAO",
-                            "sub_button" => '',
+                            "sub_button" => array(),
                         ),
                     ),
                 ),
@@ -57,7 +61,7 @@ class UserMenu {
             ),
         );
 
-        $data = json_encode($data);
+        $data = jsonencode($data);
         $res = httpsPost($this->url, $data);
         if ($res) {
             $res = json_decode($res, true);
@@ -91,7 +95,14 @@ class UserMenu {
         echo json_encode($this->returns);
     }
 
-}
+    function getMenu() {
+        $this->url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" . $this->access;
+        echo file_get_contents($this->url);
+    }
+    
+    function deleteMenu(){
+        $this->url="https://api.weixin.qq.com/cgi-bin/menu/delete?access_token".$this->access;
+        echo file_get_contents($this->url);
+    }
 
-$user = new UserMenu();
-$user->create();
+}

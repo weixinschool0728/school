@@ -1,8 +1,8 @@
 <?php
-
-include '../Common/config/config.php';
-include '../Common/functions/functions.php';
-//include '../Common/mysql/db.php';
+error_reporting(0);
+include_once '../Common/config/config.php';
+include_once '../Common/mysql/db.php';
+include_once '../Common/functions/functions.php';
 
 class JSSDK {
 
@@ -17,7 +17,6 @@ class JSSDK {
 
     public function getSignPackage() {
         $jsapiTicket = $this->getJsApiTicket();
-
         // 注意 URL 一定要动态获取，不能 hardcode.
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
         $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -84,3 +83,5 @@ class JSSDK {
 
 //$jssdk = new JSSDK(APPID, APPSECRET);
 //$signPackage = $jssdk->GetSignPackage();
+//
+//var_dump($signPackage);

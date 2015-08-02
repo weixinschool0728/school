@@ -1,9 +1,5 @@
 <?php
-
-//var_dump($_SERVER);
-//var_dump($_REQUEST);
+error_reporting(0);
 include './Common/config/config.php';
-//include './Common/mysql/mysql.php';
 include './Common/mysql/db.php';
 include './Common/functions/functions.php';
-

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>投票</title>
         <meta charset="UTF-8">
+        <meta name="description" content="大家快来给我投一票 呗"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="./js/jquery.min.js"></script>
+                <script src="./js/jweixin.js"> </script>
         <style>
             #ilike{
                 font-size: 16px;
@@ -48,7 +50,38 @@
                         }
                     });//异步加载结束
                 });
+                
+                
             });
+            
+        </script>
+        <script>
+                wx.ready(function () {
+            // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
+//            document.querySelector('#onMenuShareTimeline').onclick = function () {
+            var c_no=document.getElementById('c_no').value ;
+            c_no=c_no?"?="+c_no:"";
+            var url="http://"+"<?php echo $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];?>"+c_no;
+              wx.onMenuShareTimeline({
+                title: '投票投票',
+                link: url,
+                imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+                trigger: function (res) {
+                },
+                success: function (res) {
+                            alert('已分享');
+                        },
+                        cancel: function (res) {
+                        },
+                        fail: function (res) {
+//                            alert(JSON.stringify(res));
+                        }
+                    });
+//                };
+            });
+
+
+
         </script>
         <div>
             <input id="c_no" type="hidden" value="<?php echo isset($_GET['c_no']) ? $_GET['c_no'] : ''; ?>" />
@@ -59,7 +92,9 @@
         </div>
         <div id="m"></div>
         <div id="info">
-
         </div>
+        <!--<div id="onMenuShareTimeline">分享</div>-->
+    <?php include_once './jsCommonInclude.php';?>
     </body>
+    
 </html>
