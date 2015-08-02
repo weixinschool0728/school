@@ -126,8 +126,8 @@ class db {
 
     public function write_log($sql) {
         date_default_timezone_set('PRC'); //设置中国时区 
-        $dirname = "../log";
-        $filename = $dirname . '/' . date('Y-m-d') . ".txt";
+        $dirname = "../log/db";
+        $filename = $dirname . '/' . date('Y-m-d') . ".log";
         if (!is_dir($dirname)) {
             mkdir($dirname, 0777, true);
         }
