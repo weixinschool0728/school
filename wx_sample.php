@@ -114,8 +114,10 @@ class wechatCallbackapiTest {
                 $resultStr = $this->message->textMessage($wxData, "感谢您的关注！ 输入关键字：摇一摇 \n即可参与游戏，输入：投票 \n即可为您心仪的小朋友投上一票");
                 break;
             case "unsubscribe":
-                //t推送给管理员  更新 用户表  
-                $wxData['fromUsername'] = "oC62huMMqGoRhQfwBqX3w_ukxuU4";
+                //更新数据库的delated字段为1
+                $mydb=db::getInstance();
+                $data=array('delated'=>1,"updated"=>time());
+                $mydb->update("weixin_attention",$data,"openid='{$this->openid}'");
                 $resultStr = $this->message->textMessage($wxData, "感谢您的关注");
                 break;
             case "CLICK":
@@ -221,11 +223,12 @@ class wechatCallbackapiTest {
         $mydb = db::getInstance();
         //看是否有数据  
 
-        $sql = "select p_id from weixin_attention where delated = 0 and openid = '" . $openId . "'";
+        $sql = "select p_id from weixin_attention where openid = '" . $openId . "'";
         $res = $mydb->selectOne($sql);
         if ($res) {//update
             $data = array(
                 'updated' => time(),
+                'delated' => 0,
             );
             $mydb->update("weixin_attention", $data, "p_id = " . $res['p_id']);
         } else {//insert   username 需要  调用方法
