@@ -6,7 +6,7 @@ $db = db::getInstance();
 $c_no = isset($_GET['c_no']) ? $_GET['c_no'] : '';
 $opid = isset($_GET['opid']) ? $_GET['opid'] : '';
 $c_no = "sc000001";
-$opid = "oC62huElTtHZ8BoR5Fju2o2q20i6";
+$opid = "oC62huElTtHZ8BoR5Fju2o2q20io";
 $info = array(
     'statu' => 0,
     'total' => '5',
@@ -45,7 +45,7 @@ if ($c['c'] > 0) {
         $info['mesg'] = '已经投过此票';
     }
     //统计这个用户有多少赞 返回给前台
-    $sql = "select count(1) as c from weixin_like where deleted=0 and c_no='$c_no'";
+    $sql = "SELECT COUNT(1) AS c FROM weixin_like AS l INNER JOIN weixin_child AS c ON l.c_no=c.c_no WHERE l.c_no='{$c_no}'";
     $c = $db->selectOne($sql);
     $info['total'] = $c['c'];
 } else {
