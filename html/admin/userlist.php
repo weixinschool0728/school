@@ -1,4 +1,12 @@
+<?php
+include_once './commonBaseClass.php';
 
+class ErweimaClass extends BaseClass {
+    
+}
+
+$erweima = new ErweimaClass();
+?>
 <?php include_once './commonheader.php'; ?>
 <style>
     .btn-right {
@@ -27,8 +35,8 @@
                 <!--菜单-->
                 <div class="col-xs-12 col-sm-3 col-md-2 setting-sidebar">
                     <ul class="list-unstyled setting-list">
-                        <li class="active setting-list-li" ><a href="./userlist.php">参赛人员管理</a>
-                        <li class=" setting-list-li" ><a href="./erweima.php">二维码管理</a>
+                        <li class=" setting-list-li" ><a href="./userlist.php">参赛人员管理</a>
+                        <li class="active setting-list-li" ><a href="./erweima.php">二维码管理</a>
                         <li class=" setting-list-li"><a href="#">契約</a>
                         </li>
                         <li class=" setting-list-li"><a href="#">利用プラン</a>
@@ -46,52 +54,33 @@
                 <div class="col-xs-12 col-sm-9 col-md-10 data-list">
 
                     <div class="setting-wall">
+                        <div>
+                            <ul class="pager">
+                                <li><a href="#">上一页</a></li>
+                                <li><a href="#">下一页</a></li>
+                            </ul>
+                        </div><!--分页-->
+
                         <table class="table table-hover" id="table-mytable">
                             <thead class="table table-thead">
                                 <tr>
-                                    <td></td>
-                                    <td>ID</td>
-                                    <td>名前</td>
-                                    <td>電話</td>
-                                    <td>部門</td>
-                                    <td>役職</td>
+
+                                    <td>编号</td>
+                                    <td>姓名</td>
+                                    <td>图片</td>
+                                    <td>二维码</td>
+                                    <td>介绍</td>
+                                    <td>创建时间</td>
+                                    <td>操作</td>
                                 </tr>
                             </thead>
-                            <tbody class="table-tbody table-striped">
-                                <tr>
-                                    <td>
-                                        <input type="radio" name="table-select" value="0">
-                                    </td>
-                                    <td>suzuki@hogehoge.jp1</td>
-                                    <td>鈴木一郎</td>
-                                    <td>090-1111-2221</td>
-                                    <td>営業部</td>
-                                    <td>部長</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="radio" name="table-select" value="1">
-                                    </td>
-                                    <td>suzuki@hogehoge.jp2</td>
-                                    <td>鈴木一郎</td>
-                                    <td>090-1111-2221</td>
-                                    <td>営業部</td>
-                                    <td>部長</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="radio" name="table-select" value="2">
-                                    </td>
-                                    <td>suzuki@hogehoge.jp3</td>
-                                    <td>鈴木一郎</td>
-                                    <td>090-1111-2221</td>
-                                    <td>営業部</td>
-                                    <td>部長</td>
-                                </tr>
+                            <tbody class="table-tbody table-striped table-mytable">
+
                             </tbody>
                         </table>
-                        <button class="btn btn-primary btn-delate btn-login btn-right">削除</button>
-                        <button class="btn btn-primary btn-edit btn-login btn-right">編集</button>
+
+                        <button class="btn btn-primary btn-delate btn-login btn-right">shen</button>
+                        <button class="btn btn-primary btn-edit btn-login btn-right">tianjia</button>
                         <div class="clearfix">
                         </div>
 
@@ -105,21 +94,21 @@
                         <div class="pull-right" onclick="closeDataEdit()">关闭</div>
                         <form class="form-horizontal data-edit-form" role="form">
                             <div class="form-group">
-                                <label for="inputEmail3" class="col-sm-2 control-label">メールアドレス</label>
+                                <label for="inputc_no" class="col-sm-2 control-label">编号</label>
                                 <div class="col-sm-5">
-                                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                                    <input type="text" class="form-control" id="inputc_no" placeholder="编号">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputName" class="col-sm-2 control-label">名前</label>
+                                <label for="inputName" class="col-sm-2 control-label">姓名</label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="inputName" placeholder="Name" value="mingqian">
+                                    <input type="text" class="form-control" id="inputName" placeholder="Name" value="姓名">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputVoice" class="col-sm-2 control-label">フリガナ</label>
+                                <label for="inputHead" class="col-sm-2 control-label">头像</label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="inputVoice" placeholder="フリガナ">
+                                    <input type="file" class="form-control" id="inputHead" placeholder="头像">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -157,6 +146,7 @@
                     <!--.setting-wall-->
                 </div>
                 <!--.col-xs-12 data-edit--->
+
             </div>
             <!-- /.row -->
         </div>
@@ -164,34 +154,86 @@
     </div>
     <!-- /.container -->
     <?php include_once './commonfooter.php'; ?>
-
     <script>
-        $(function () {// 显示编辑界面并且为编辑页面赋值
-            $(".btn-edit").click(function () {
-                var a = $("input[type='radio']:checked").val();
-                if (a == undefined) {
-                    alert("请选择");
-                } else {
-                    var values = Array();
-                    a++;
-                    var table_tr_obj = $("#table-mytable tr:eq(" + a + ") td:gt(0)");
-                    $(table_tr_obj).each(function (i) {
-                        values[i] = $(this).text();
-                    });
-                    $("#inputEmail3").val(values[0]);
-                    $("#inputName").val(values[1]);
-                    $("#inputTelInner").val(values[2]);
+        $(function () {
+            getUser();
 
-                    $(".data-edit").show();
-                    $(".data-list").hide();
-                }
-
-            });
         });
-
         function closeDataEdit() {
             $(".data-edit").hide();
             $(".data-list").show();
+        }
+        function getUser(page) {
+            page = page ? page : 1;
+            $.ajax({
+                url: "./cerweima.php?a=userlist",
+                data: {'page': page},
+                async: true, //默认为true 异步 
+                success: function (data) {
+                    data = $.parseJSON(data);
+
+                    var str = '<li class="disabled"><a href="#">' + data.p.page + '/' + data.p.pages + '</a></li>';   //创建分页
+                    var previous = data.p.page - 1;
+                    var next = parseInt(data.p.page) + 1;
+                    if (data.p.page == 1) {
+                        str += '<li class="disabled"><a href="#">上一页</a></li>';
+                    } else {
+                        str += '<li><a href="javascript:getUser(' + previous + ')">上一页</a></li>';
+                    }
+                    if (data.p.page == data.p.pages) {
+                        str += '<li class="disabled"><a href="#">下一页</a></li>';
+                    } else {
+                        str += '<li><a href="javascript:getUser(' + next + ')">下一页</a></li>';
+                    }
+                    $(".pager").html(str);
+                    //分页结束
+                    //表格操作
+                    str = "";
+                    $(".table-mytable tr").remove();
+                    for (var i in data.data) {
+                        str += "<tr>";
+                        str += "<td>" + data.data[i].c_no + "</td>";
+                        str += "<td>" + data.data[i].c_username + "</td>";
+                        str += "<td><img src='" + data.data[i].c_head + "'></td>";
+                        str += '<td><img src="' + data.data[i].c_qrpath + '"></td>';
+                        str += '<td style="text-overflow:ellipsis;text-overflow: ellipsis;-ms-text-overflow: ellipsis;">' + data.data[i].content + '</td>';
+                        str += '<td>' + getLocalTime(data.data[i].created) + '</td>';
+                        str += '<td><button onclick="deleteuser(' + data.data[i].c_id + ',this)" class="btn">删除</button>' + '<button onclick="edituser(' + data.data[i].c_id + ')" class="btn">编辑</button>' + '</td>';
+                        str += "</tr>";
+                    }
+                    $(".table-mytable").html(str);
+                },
+            });
+        }
+        function edituser(id, obj) {
+            alert(id);
+            $(".data-edit").show();
+            $(".data-list").hide();
+        }
+        function deleteuser(id, obj) {
+            if (confirm("确定删除吗？")) {
+
+                $.ajax({
+                    url: "./cerweima.php?a=deleteuser",
+                    data: {'id': id},
+                    type: "post",
+                    success: function (data) {
+                        data = $.parseJSON(data);
+
+                        if (data.state == 0) {
+                            $(obj).parent().parent().remove();
+                        } else {
+                            alert("失败");
+                        }
+
+                    },
+                });
+            }
+
+        }
+
+        function getLocalTime(nS) {
+            return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
         }
     </script>
 

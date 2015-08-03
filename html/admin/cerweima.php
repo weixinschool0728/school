@@ -71,16 +71,42 @@ class Cerweima extends CBaseClass {
 
 $cerweima = new Cerweima();
 $get = get();
-if ($get['a'] == "userlist") {
-    $returns = array();
-    $data = $cerweima->getchild($get['page']);
-    echo jsonencode($data);
-} else if ($get['a'] == "deleteuser") {
-    $post = post();
-    if ($cerweima->deleteChild($post['id'])) {
-        $res['state'] = 0;
-    } else {
-        $res['state'] = 1;
-    }
-    echo jsonencode($res);
+switch ($get['a']) {
+    case "userlist":
+        $returns = array();
+        $data = $cerweima->getchild($get['page']);
+        echo jsonencode($data);
+
+        break;
+    case "deleteuser":
+        $post = post();
+        if ($cerweima->deleteChild($post['id'])) {
+            $res['state'] = 0;
+        } else {
+            $res['state'] = 1;
+        }
+        echo jsonencode($res);
+
+        break;
+    case "userlist":
+        $returns = array();
+        $data = $cerweima->getchild($get['page']);
+        echo jsonencode($data);
+
+        break;
+    case "erweimalist":
+        $returns = array();
+        $data = $cerweima->getchild($get['page']);
+        echo jsonencode($data);
+
+        break;
+    case "":
+        $returns = array();
+        $data = $cerweima->getchild($get['page']);
+        echo jsonencode($data);
+
+        break;
+
+    default:
+        break;
 }
