@@ -18,61 +18,69 @@ class Cerweima extends CBaseClass {
         $res = $this->mydb->selectOne($sql);
         $pages = ceil($res['c'] / $this->perpage);
         for ($page = 0; $page < $pages; $page++) {
-            $sql = "SELECT c_no FROM weixin_child WHERE delated=0 ORDER BY c_id
+            $sql = "SELECT c_id,c_no FROM weixin_child WHERE delated=0 ORDER BY c_id
 					LIMIT " . ($page * $this->perpage) . ", {$this->perpage}";
-                    $res=  $this->mydb->selectAll($sql);
-                    var_dump($res);
-                    //接着写  太晚啦
+            $res = $this->mydb->selectAll($sql);
+            var_dump($res);
+            if ($res) {
+                $this->processQr($res);
+            }
+            //接着写  太晚啦
         }
+    }
+
+    function processQr($data, $filename = "./qrcodeImages") {
+        $errorCorrectionLevel = 'L'; //容错级别 
+        $matrixPointSize = 6; //生成图片大小 
+        $filename = $filename . "/" . date("Y-m-d");
+        if (!file_exists($filename)) {
+            mkdir($filename, 0777, true);
+        }
+        include_once './common/phpqrcode.php';
+        foreach ($data as $value) {
+            $qrPath = $filename . '/qrcode-id-' . $value['c_id'] . '-' . $value['c_no'] . '.png';
+
+            QRcode::png($_SERVER['HTTP_HOST'] . "/html/pointlike.php?c_no=" . $value['c_no'], $qrPath, $errorCorrectionLevel, $matrixPointSize, 2);
+            $qrPath = preg_replace("/(^\.)(.*)$/i", "Http://" . $_SERVER['HTTP_HOST'] . "/html/admin$2", $qrPath);
+            $this->updateChild($value['c_id'], $qrPath);
+        }
+    }
+
+    function updateChild($cId, $qrPath) {
+        $this->mydb->update("weixin_child", array("c_qrpath" => $qrPath), "c_id={$cId}");
+    }
+
+    function deleteChild($cId = 0) {
+        return $this->mydb->update("weixin_child", array("delated" => "1"), "c_id={$cId}");
+    }
+
+    function getchild($page = 1) {
+        $sql = "select count(*) c from weixin_child where delated=0";
+        $res['p'] = $this->mydb->selectOne($sql);
+        $res['p']['perpage'] = $this->perpage;
+        $res['p']['pages'] = ceil($res['p']['c'] / $this->perpage);
+        $res['p']['page'] = $page;
+
+        $start = ($page - 1) * $this->perpage;
+        $sql = "select c_id,c_no,c_username,c_head,c_qrpath,content,created  from weixin_child where delated=0 limit {$start} ,{$this->perpage} ";
+        $res['data'] = $this->mydb->selectAll($sql);
+        return $res;
     }
 
 }
 
 $cerweima = new Cerweima();
-$cerweima->getData();
-exit;
-$filename = "qrcodeImages";
-if (!file_exists($filename)) {
-    mkdir("$filename");
+$get = get();
+if ($get['a'] == "userlist") {
+    $returns = array();
+    $data = $cerweima->getchild($get['page']);
+    echo jsonencode($data);
+} else if ($get['a'] == "deleteuser") {
+    $post = post();
+    if ($cerweima->deleteChild($post['id'])) {
+        $res['state'] = 0;
+    } else {
+        $res['state'] = 1;
+    }
+    echo jsonencode($res);
 }
-
-include('./common/phpqrcode.php');
-$value1 = 'http://www.aixianxing.com'; //二维码内容 
-$values = array(
-    1 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0001',
-    2 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0002',
-    3 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0003',
-    4 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0004',
-    5 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0005',
-    6 => 'http://www.aixianxing.com/index.php?m=Index&a=index&sid=0006',
-);
-$errorCorrectionLevel = 'L'; //容错级别 
-$matrixPointSize = 6; //生成图片大小 
-//生成二维码图片 
-foreach ($values as $key => $value) {
-    QRcode::png($value, $filename . '/qrcode-' . $key . '.png', $errorCorrectionLevel, $matrixPointSize, 2);
-}
-
-
-
-
-$logo = 'logo.png'; //准备好的logo图片 
-$QR = 'qrcodeImages/qrcode.png'; //已经生成的原始二维码图 
-
-if ($logo == FALSE) {
-    $QR = imagecreatefromstring(file_get_contents($QR));
-    $logo = imagecreatefromstring(file_get_contents($logo));
-    $QR_width = imagesx($QR); //二维码图片宽度 
-    $QR_height = imagesy($QR); //二维码图片高度 
-    $logo_width = imagesx($logo); //logo图片宽度 
-    $logo_height = imagesy($logo); //logo图片高度 
-    $logo_qr_width = $QR_width / 5;
-    $scale = $logo_width / $logo_qr_width;
-    $logo_qr_height = $logo_height / $scale;
-    $from_width = ($QR_width - $logo_qr_width) / 2;
-    //重新组合图片并调整大小 
-    imagecopyresampled($QR, $logo, $from_width, $from_width, 0, 0, $logo_qr_width, $logo_qr_height, $logo_width, $logo_height);
-}
-//输出图片 
-//imagepng($QR, 'helloweba.png'); 
-echo '<img src="' . $filename . '/qrcode.png">';

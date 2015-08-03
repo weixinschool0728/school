@@ -3,3 +3,4 @@ ALTER TABLE  `weixin_attention` ADD  `p_head` VARCHAR( 128 ) CHARACTER SET utf8 
 ALTER TABLE  `weixin_attention` ADD  `p_shake` INT( 16 ) NOT NULL DEFAULT  '0' AFTER  `p_head` ;
 ALTER TABLE `weixin_child` ADD `c_head` VARCHAR(128) NULL AFTER `c_username`;
 ALTER TABLE `weixin_child` ADD `content` TEXT NULL AFTER `c_head`;
+ALTER TABLE  `weixin_child` ADD  `c_qrpath` VARCHAR( 128 ) NULL AFTER  `c_head` ;

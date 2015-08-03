@@ -4,3 +4,5 @@
 /Common/mysql/mysql.php
 /Common/mysql/db.php
 /log
+/html/admin/qrcodeImages
+/html/log
