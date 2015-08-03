@@ -31,8 +31,8 @@ class Cerweima extends CBaseClass {
 
     function processQr($data, $filename = "./qrcodeImages") {
         $errorCorrectionLevel = 'L'; //容错级别 
-        $matrixPointSize = 6; //生成图片大小 
-        $filename = $filename . "/" . date("Y-m-d");
+        $matrixPointSize = 5; //生成图片大小 
+//        $filename = $filename . "/" . date("Y-m-d");
         if (!file_exists($filename)) {
             mkdir($filename, 0777, true);
         }
@@ -60,9 +60,13 @@ class Cerweima extends CBaseClass {
         $res['p']['perpage'] = $this->perpage;
         $res['p']['pages'] = ceil($res['p']['c'] / $this->perpage);
         $res['p']['page'] = $page;
+        if ($page == "all") {
+            $sql = "select c_id,c_no,c_username,c_qrpath  from weixin_child where delated=0 ";
+        } else {
 
-        $start = ($page - 1) * $this->perpage;
-        $sql = "select c_id,c_no,c_username,c_head,c_qrpath,content,created  from weixin_child where delated=0 limit {$start} ,{$this->perpage} ";
+            $start = ($page - 1) * $this->perpage;
+            $sql = "select c_id,c_no,c_username,c_head,c_qrpath,content,created  from weixin_child where delated=0 limit {$start} ,{$this->perpage} ";
+        }
         $res['data'] = $this->mydb->selectAll($sql);
         return $res;
     }
@@ -96,13 +100,13 @@ switch ($get['a']) {
         break;
     case "erweimalist":
         $returns = array();
-        $data = $cerweima->getchild($get['page']);
+        $data = $cerweima->getchild("all");
         echo jsonencode($data);
 
         break;
-    case "":
+    case "createers":
         $returns = array();
-        $data = $cerweima->getchild($get['page']);
+        $data = $cerweima->getData();
         echo jsonencode($data);
 
         break;

@@ -24,6 +24,20 @@ $erweima = new ErweimaClass();
     .data-edit {
         display: none;
     }
+
+    @media print {
+        .printContent{
+            width: 100pt;
+            height: 100pt;
+            background-color: #00FF00;
+        }
+        .printContent img{
+            width: 90pt;
+            height: 90pt;
+            margin-right:auto; 
+            margin-left:auto; 
+        }
+    }
 </style>
 <div class="wrapper settingwrap clearfix">
 
@@ -60,6 +74,8 @@ $erweima = new ErweimaClass();
                             </ul>
                         </div><!--分页-->
 
+                        <div id="erweimas" style="display:none"></div>
+
                         <div class="">
                             <form class="form-horizontal data-search-form" role="form">
                                 <div class="form-group">
@@ -72,7 +88,7 @@ $erweima = new ErweimaClass();
                             <button class="btn btn-primary btn-search btn-login btn-right">搜索</button>
                         </div>
 
-                      
+
                         <div class="clearfix">
                         </div>
 
@@ -90,10 +106,10 @@ $erweima = new ErweimaClass();
     </div>
     <!-- /.container -->
     <?php include_once './commonfooter.php'; ?>
+    <script language="javascript" src="../js/jquery.PrintArea.js"></script>
     <script>
         $(function () {
             getUser();
-
         });
         function closeDataEdit() {
             $(".data-edit").hide();
@@ -114,30 +130,34 @@ $erweima = new ErweimaClass();
 
                     $(".pager").html(str);
                     //分页结束
-                    //表格操作
-//                    str = "";
-//                    $(".table-mytable tr").remove();
-//                    for (var i in data.data) {
-//                        str += "<tr>";
-//                        str += "<td>" + data.data[i].c_no + "</td>";
-//                        str += "<td>" + data.data[i].c_username + "</td>";
-//                        str += "<td><img src='" + data.data[i].c_head + "'></td>";
-//                        str += '<td><img src="' + data.data[i].c_qrpath + '"></td>';
-//                        str += '<td style="text-overflow:ellipsis;text-overflow: ellipsis;-ms-text-overflow: ellipsis;">' + data.data[i].content + '</td>';
-//                        str += '<td>' + getLocalTime(data.data[i].created) + '</td>';
-//                        str += '<td><button onclick="deleteuser(' + data.data[i].c_id + ',this)" class="btn">删除</button>' + '<button onclick="edituser(' + data.data[i].c_id + ')" class="btn">编辑</button>' + '</td>';
-//                        str += "</tr>";
-//                    }
-//                    $(".table-mytable").html(str);
+                    //二维码列表
+                    str = "";
+                    $("#erweimas").html();
+                    for (var i in data.data) {
+                        str += "<div class='printContent'>";
+                        str += "<img src='" + data.data[i].c_qrpath + "'>";
+                        str += "<p>" + data.data[i].c_no + "</p>";
+                        str += "</div>";
+                    }
+                    $("#erweimas").html(str);
                 },
             });
         }
         function createers() {
 
+            $.ajax({
+                url: "./cerweima.php?a=createers",
+                success: function (data) {
+                    alert(data);
+                },
+            });
         }
 
         function printers() {
-            alert(111);
+            var probj = $(".printContent");
+            $(".printContent").each(function (i) {
+                $(probj[i]).printArea();
+            });
         }
 
         function getLocalTime(nS) {
