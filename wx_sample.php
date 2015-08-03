@@ -236,6 +236,7 @@ class wechatCallbackapiTest {
             $data = array(
                 'openid' => $openId,
                 'username' => $user['nickname'],
+                'p_head' => $user['headimgurl'],
                 'created' => time(),
             );
             $mydb->insert("weixin_attention", $data);
