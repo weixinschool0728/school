@@ -26,12 +26,12 @@ $erweima = new ErweimaClass();
     }
 
     @media print {
-        .printContent{
+        .printContent div{
             width: 100pt;
             height: 100pt;
             background-color: #00FF00;
         }
-        .printContent img{
+        .printContent div img{
             width: 90pt;
             height: 90pt;
             margin-right:auto; 
@@ -51,14 +51,7 @@ $erweima = new ErweimaClass();
                     <ul class="list-unstyled setting-list">
                         <li class=" setting-list-li" ><a href="./userlist.php">参赛人员管理</a>
                         <li class="active setting-list-li" ><a href="./erweima.php">二维码管理</a>
-                        <li class=" setting-list-li"><a href="#">契約</a>
-                        </li>
-                        <li class=" setting-list-li"><a href="#">利用プラン</a>
-                        </li>
-                        <li class=" setting-list-li"><a href="#">支払方法</a>
-                        </li>
-                        <li><a href="#">連絡先情報</a>
-                        </li>
+
                     </ul>
                 </div>
                 <!-- /.col-sm-3 菜单-->
@@ -74,19 +67,22 @@ $erweima = new ErweimaClass();
                             </ul>
                         </div><!--分页-->
 
-                        <div id="erweimas" style="display:none"></div>
 
-                        <div class="">
-                            <form class="form-horizontal data-search-form" role="form">
-                                <div class="form-group">
-                                    <label for="inputc_no" class="col-sm-2 control-label">编号</label>
-                                    <div class="col-sm-5">
-                                        <input type="text" class="form-control" id="inputc_no" placeholder="编号">
-                                    </div>
-                                </div>
-                            </form>
-                            <button class="btn btn-primary btn-search btn-login btn-right">搜索</button>
+                        <!--<div class="">-->
+                        <!--<form class="form-horizontal data-search-form" role="form">-->
+                        <div class="form-group">
+                            <label for="inputc_no" class="col-sm-1 control-label offset-2">编号</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control col-sm-4" name="inputc_no" id="inputc_no" placeholder="编号">
+                                <button class="btn btn-search pull-right col-sm-1" onclick="searchCno();
+                                        return false;">搜索</button>
+                            </div>
                         </div>
+
+                        <div id="erweimas" ></div>
+                        <!--</form>-->
+
+                        <!--</div>-->
 
 
                         <div class="clearfix">
@@ -108,60 +104,87 @@ $erweima = new ErweimaClass();
     <?php include_once './commonfooter.php'; ?>
     <script language="javascript" src="../js/jquery.PrintArea.js"></script>
     <script>
-        $(function () {
-            getUser();
-        });
-        function closeDataEdit() {
-            $(".data-edit").hide();
-            $(".data-list").show();
-        }
-        function getUser(page) {
-            page = page ? page : 1;
-            $.ajax({
-                url: "./cerweima.php?a=erweimalist",
-                data: {'page': page},
-                async: true, //默认为true 异步 
-                success: function (data) {
-                    data = $.parseJSON(data);
+                                    $(function () {
+                                        getUser();
+                                    });
+                                    function closeDataEdit() {
+                                        $(".data-edit").hide();
+                                        $(".data-list").show();
+                                    }
+                                    function getUser(page) {
+                                        page = page ? page : 1;
+                                        $.ajax({
+                                            url: "./cerweima.php?a=erweimalist",
+                                            data: {'page': page},
+                                            async: true, //默认为true 异步 
+                                            success: function (data) {
+                                                data = $.parseJSON(data);
 
-                    var str = '<li><a href="JavaScript:createers()">生成二维码</a></li>';
-                    str += '<li><a href="JavaScript:printers()">打印' + data.p.c + '个二维码</a></li>';
-//                        str += '<li class="disabled"><a href="#">(' + data.p.page + '/' + data.p.pages + ')</a></li>';   //创建分页
+                                                var str = '<li><a href="JavaScript:createers()">生成二维码</a></li>';
+                                                str += '<li><a href="JavaScript:printers()">打印' + data.p.c + '个二维码</a></li>';
+                                                //                        str += '<li class="disabled"><a href="#">(' + data.p.page + '/' + data.p.pages + ')</a></li>';   //创建分页
 
-                    $(".pager").html(str);
-                    //分页结束
-                    //二维码列表
-                    str = "";
-                    $("#erweimas").html();
-                    for (var i in data.data) {
-                        str += "<div class='printContent'>";
-                        str += "<img src='" + data.data[i].c_qrpath + "'>";
-                        str += "<p>" + data.data[i].c_no + "</p>";
-                        str += "</div>";
-                    }
-                    $("#erweimas").html(str);
-                },
-            });
-        }
-        function createers() {
+                                                $(".pager").html(str);
+                                                //分页结束
+                                                //二维码列表
+                                                str = "";
+                                                $("#erweimas").html();
+                                                for (var i in data.data) {
+                                                    str += "<div class='printContent pull-left'><div>";
+                                                    str += "<img src='" + data.data[i].c_qrpath + "'>";
+                                                    str += "<p>" + data.data[i].c_no + "</p>";
+                                                    str += "</div></div>";
+                                                }
+                                                $("#erweimas").html(str);
+                                            },
+                                        });
+                                    }
+                                    function createers() {
 
-            $.ajax({
-                url: "./cerweima.php?a=createers",
-                success: function (data) {
-                    alert(data);
-                },
-            });
-        }
+                                        $.ajax({
+                                            url: "./cerweima.php?a=createers",
+                                            success: function (data) {
+                                                alert(data);
+                                            },
+                                        });
+                                    }
 
-        function printers() {
-            var probj = $(".printContent");
-            $(".printContent").each(function (i) {
-                $(probj[i]).printArea();
-            });
-        }
+                                    function printers() {
+                                        var probj = $(".printContent");
+                                        $(".printContent").each(function (i) {
+                                            $(probj[i]).printArea();
+                                        });
+                                    }
+                                    function searchCno() {
+                                        var cno = $("#inputc_no").val();
+                                        if (cno) {
+                                            $.ajax({
+                                                url: "./cerweima.php?a=searchcno",
+                                                data: {'cno': cno},
+                                                type: "post",
+                                                success: function (data) {
+                                                    data = $.parseJSON(data);
+                                                    if (data.state == 0) {
+                                                        var str = "<div class='search-re printContent'><img src='" + data.c_qrpath + "'>";
+                                                        str += "<p>" + data.c_no + "</p></div>";
+                                                        $("#erweimas").remove();
+                                                        $(".form-group").after(str);
+                                                        str = "";
+                                                        str += "<ul class='pages'><li><a href='JavaScript:printers()'>打印</a></li></ul>";
+                                                        $(".search-re").after(str);
+                                                    } else {
+                                                        alert("没找到");
+                                                    }
+                                                },
+                                            });
+                                        } else {
+                                            alert("请输入编号 例如:sc20113110");
+                                            return false;
+                                        }
+                                    }
 
-        function getLocalTime(nS) {
-            return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
-        }
+                                    function getLocalTime(nS) {
+                                        return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
+                                    }
     </script>
 

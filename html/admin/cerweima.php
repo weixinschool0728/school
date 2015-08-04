@@ -70,6 +70,12 @@ class Cerweima extends CBaseClass {
         $res['data'] = $this->mydb->selectAll($sql);
         return $res;
     }
+    
+    function getOneData($cno=0){
+        $sql="select c_id,c_no,c_username,c_qrpath  from weixin_child where delated=0 and c_no='{$cno}'";
+        
+        return $this->mydb->selectOne($sql);
+    }
 
 }
 
@@ -108,6 +114,15 @@ switch ($get['a']) {
         $returns = array();
         $data = $cerweima->getData();
         echo jsonencode($data);
+
+        break;
+    case "searchcno":
+        $returns = array();
+        $post=post();
+        $returns = $cerweima->getOneData($post['cno']);
+        if($returns){$returns['state']=0;}
+        else{$returns['state']=1;}
+        echo jsonencode($returns);
 
         break;
 

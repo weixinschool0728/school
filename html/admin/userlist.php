@@ -35,15 +35,9 @@ $erweima = new ErweimaClass();
                 <!--菜单-->
                 <div class="col-xs-12 col-sm-3 col-md-2 setting-sidebar">
                     <ul class="list-unstyled setting-list">
-                        <li class=" setting-list-li" ><a href="./userlist.php">参赛人员管理</a>
-                        <li class="active setting-list-li" ><a href="./erweima.php">二维码管理</a>
-                        <li class=" setting-list-li"><a href="#">契約</a>
-                        </li>
-                        <li class=" setting-list-li"><a href="#">利用プラン</a>
-                        </li>
-                        <li class=" setting-list-li"><a href="#">支払方法</a>
-                        </li>
-                        <li><a href="#">連絡先情報</a>
+                        <li class="active setting-list-li" ><a href="./userlist.php">参赛人员管理</a>
+                        <li class="setting-list-li" ><a href="./erweima.php">二维码管理</a>
+
                         </li>
                     </ul>
                 </div>
@@ -79,8 +73,8 @@ $erweima = new ErweimaClass();
                             </tbody>
                         </table>
 
-                        <button class="btn btn-primary btn-delate btn-login btn-right">shen</button>
-                        <button class="btn btn-primary btn-edit btn-login btn-right">tianjia</button>
+<!--                        <button class="btn btn-primary btn-delate btn-login btn-right">shen</button>
+                        <button class="btn btn-primary btn-edit btn-login btn-right">tianjia</button>-->
                         <div class="clearfix">
                         </div>
 
@@ -194,8 +188,8 @@ $erweima = new ErweimaClass();
                         str += "<tr>";
                         str += "<td>" + data.data[i].c_no + "</td>";
                         str += "<td>" + data.data[i].c_username + "</td>";
-                        str += "<td><img src='" + data.data[i].c_head + "'></td>";
-                        str += '<td><img src="' + data.data[i].c_qrpath + '"></td>';
+                        str += "<td><img  src='" + data.data[i].c_head + "'></td>";
+                        str += '<td><img class="col-sm-5" src="' + data.data[i].c_qrpath + '"></td>';
                         str += '<td style="text-overflow:ellipsis;text-overflow: ellipsis;-ms-text-overflow: ellipsis;">' + data.data[i].content + '</td>';
                         str += '<td>' + getLocalTime(data.data[i].created) + '</td>';
                         str += '<td><button onclick="deleteuser(' + data.data[i].c_id + ',this)" class="btn">删除</button>' + '<button onclick="edituser(' + data.data[i].c_id + ')" class="btn">编辑</button>' + '</td>';
