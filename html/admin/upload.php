@@ -18,8 +18,8 @@ if ($action == 'delimg') {
     $picname = $_FILES['mypic']['name'];
     $picsize = $_FILES['mypic']['size'];
     if ($picname != "") {
-        if ($picsize > 10240000) {
-            echo '图片大小不能超过10M';
+        if ($picsize > 1024000) {
+            echo '图片大小不能超过1M';
             exit;
         }
         $type = strstr($picname, '.');
