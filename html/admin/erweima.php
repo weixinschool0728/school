@@ -70,12 +70,14 @@ $erweima = new ErweimaClass();
 
                         <!--<div class="">-->
                         <!--<form class="form-horizontal data-search-form" role="form">-->
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label for="inputc_no" class="col-sm-1 control-label offset-2">编号</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control col-sm-4" name="inputc_no" id="inputc_no" placeholder="编号">
-                                <button class="btn btn-search pull-right col-sm-1" onclick="searchCno();
-                                        return false;">搜索</button>
+                            <div class="input-group col-sm-9">
+                                <input type="text" class="form-control col-sm-7" name="inputc_no" id="inputc_no" placeholder="编号">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default  btn-search" type="button"onclick="searchCno();return false;">搜索</button>
+                                </span>
+                                <!--<button class="btn btn-search pull-right col-sm-1" onclick="searchCno();return false;">搜索</button>-->
                             </div>
                         </div>
 
@@ -121,8 +123,7 @@ $erweima = new ErweimaClass();
                                                 data = $.parseJSON(data);
 
                                                 var str = '<li><a href="JavaScript:createers()">生成二维码</a></li>';
-                                                str += '<li><a href="JavaScript:printers()">打印' + data.p.c + '个二维码</a></li>';
-                                                //                        str += '<li class="disabled"><a href="#">(' + data.p.page + '/' + data.p.pages + ')</a></li>';   //创建分页
+                                                str += '<li><a href="JavaScript:printers()">打印' + '二维码</a></li>';
 
                                                 $(".pager").html(str);
                                                 //分页结束
@@ -169,9 +170,7 @@ $erweima = new ErweimaClass();
                                                         str += "<p>" + data.c_no + "</p></div>";
                                                         $("#erweimas").remove();
                                                         $(".form-group").after(str);
-                                                        str = "";
-                                                        str += "<ul class='pages'><li><a href='JavaScript:printers()'>打印</a></li></ul>";
-                                                        $(".search-re").after(str);
+
                                                     } else {
                                                         alert("没找到");
                                                     }
