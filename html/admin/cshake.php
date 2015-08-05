@@ -32,7 +32,7 @@ class Cshake extends CBaseClass {
     }
     
     function getDataList() {
-        $sql="SELECT * FROM weixin_attention WHERE delated=0 ORDER BY p_shake DESC LIMIT 0,10";
+        $sql="SELECT username as name,p_head as head,p_shake as shake FROM weixin_attention WHERE delated=0 ORDER BY p_shake DESC LIMIT 0,10";
         $data=$this->mydb->selectAll($sql);
         echo json_encode($data);
     }
