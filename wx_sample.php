@@ -58,8 +58,7 @@ class wechatCallbackapiTest {
             $wxData['time'] = time();
             $contentStr = "";
             $this->openid = $wxData['fromUsername'];
-            //数据插入e
-            $this->insertOpenId($wxData['fromUsername']);
+
 
             //事件处理
             if ($wxData['MsgType']) {
@@ -86,12 +85,17 @@ class wechatCallbackapiTest {
             switch ($wxData['keyword']) {
                 case "摇一摇":
                     //发送图文消息
+                    //数据插入e
+                    $this->insertOpenId($wxData['fromUsername']);
                     $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                     break;
                 case "投票":
+                    //数据插入e
+                    $this->insertOpenId($wxData['fromUsername']);
                     $resultStr = $this->message->danTuWen($wxData, "投票", "为您心仪的小朋友加加油", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                     break;
                 case "扫一扫":
+
                     $resultStr = $this->message->danTuWen($wxData, "扫一扫", "一起来扫扫吧", $_SERVER['SERVER_NAME'] . "/html/img/yaoyiyao.png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                     break;
                 case "js":
@@ -115,9 +119,9 @@ class wechatCallbackapiTest {
                 break;
             case "unsubscribe":
                 //更新数据库的delated字段为1
-                $mydb=db::getInstance();
-                $data=array('delated'=>1,"updated"=>time());
-                $mydb->update("weixin_attention",$data,"openid='{$this->openid}'");
+                $mydb = db::getInstance();
+                $data = array('delated' => 1, "updated" => time());
+                $mydb->update("weixin_attention", $data, "openid='{$this->openid}'");
                 $resultStr = $this->message->textMessage($wxData, "感谢您的关注");
                 break;
             case "CLICK":
@@ -151,6 +155,8 @@ class wechatCallbackapiTest {
             case "SAOYISAO":
                 if (preg_match("/^(.*)(aixianxing)(.*)$/i", $ScanResult)) {
                     if (preg_match("/^(.*)(php)$/i", $ScanResult)) {
+                        //数据插入e
+                        $this->insertOpenId($wxData['fromUsername']);
                         $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "?opid=" . $this->openid);
                     } else {
                         $resultStr = $this->message->danTuWen($wxData, "扫一扫", "没事儿就扫一扫", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $ScanResult . "&opid=" . $this->openid);
@@ -175,9 +181,13 @@ class wechatCallbackapiTest {
 //    $wxData['EventKey']   根据自定义菜单来判断
         switch ($wxData['EventKey']) {
             case "YAOYIYAO":
+                //数据插入e
+                $this->insertOpenId($wxData['fromUsername']);
                 $resultStr = $this->message->danTuWen($wxData, "摇一摇", "一起摇吧", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/shake.php?id=" . $wxData['fromUsername']);
                 break;
             case "TOUPIAO":
+                //数据插入e
+                $this->insertOpenId($wxData['fromUsername']);
                 $resultStr = $this->message->danTuWen($wxData, "投票", "为你喜欢的小伙伴投上一票吧，", "https://mmbiz.qlogo.cn/mmbiz/uFNEVPHibdR13mCOhfRnq15RSt5oKRmgFkeY2Bnviav7zO7yRgpnU74RYlaG8kUmr4lAuw4cq3CA1RDe4DcfcCFg/0?wx_fmt=png", $_SERVER['SERVER_NAME'] . "/html/pointlike.php?opid=" . $this->openid);
                 break;
             case 2:

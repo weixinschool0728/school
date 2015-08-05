@@ -13,30 +13,28 @@ class Cshake extends CBaseClass {
         parent::__construct();
     }
 
-    // function updateChile($post = array()) {
-    //     $data['c_no'] = $post['no'];
-    //     $data['c_username'] = $post['name'];
-    //     $data['c_head'] = $post['img'];
-    //     $data['content'] = $post['content'];
-    //     $data['updated'] = time();
-    //     $data['delated'] = $post['state'];
-    //     $id = $post['id'];
-    //     return $this->mydb->update("weixin_child", $data, "c_id={$id}");
-    // }
-
     function startShake() {
 
-        if (file_exists($this->filename)) {
-            $data = json_decode(file_get_contents($this->filename), true);
-            $data['leave'] = time() - $data['time'];
-            
+
+            $data['time'] = time();
+            $data['endtime'] = 0;
             file_put_contents($this->filename, json_encode($data));
-        } else {
-            $data['time']=time();
-            $data['leave']=0;
-            file_put_contents($this->filename,json_encode($data));
-        }
+            echo jsonencode($data);
+    }
+    function endShake() {
+
+        if(file_exists($this->filename)) {
+            $data = json_decode(file_get_contents($this->filename), true);
+            $data['endtime'] = time();
+            file_put_contents($this->filename, json_encode($data));
         echo jsonencode($data);
+        }
+    }
+    
+    function getDataList() {
+        $sql="SELECT * FROM weixin_attention WHERE delated=0 ORDER BY p_shake DESC LIMIT 0,10";
+        $data=$this->mydb->selectAll($sql);
+        echo json_encode($data);
     }
 
 }
@@ -46,7 +44,12 @@ $get = get();
 switch ($get['a']) {
     case "start":
         $cshake->startShake();
-
+        break;
+    case "end":
+        $cshake->endShake();
+        break;
+    case "getDataList":
+        $cshake->getDataList();
         break;
 
 
