@@ -134,6 +134,13 @@ class wechatCallbackapiTest {
                 $wxData['EventKey'] = trim($wxData['postObj']->EventKey);
                 $this->eventscancodeWaitmsg($wxData);
                 break;
+            case "LOCATION":
+                //自定义菜单的扫码事件
+                $wxData['Latitude'] = trim($wxData['postObj']->Latitude);
+                $wxData['Longitude'] = trim($wxData['postObj']->Longitude);
+                $wxData['Precision'] = trim($wxData['postObj']->Precision);
+                $resultStr = $this->message->textMessage($wxData, "X:".$wxData['Latitude']."Y:".$wxData['Longitude']."精度：".$wxData['Precision']);
+                break;
             case "VIEW":
                 //自定义菜单的视图连接事件  主要是    获取openId
 //            $wxData['EventKey'] = trim($wxData['postObj']->EventKey);

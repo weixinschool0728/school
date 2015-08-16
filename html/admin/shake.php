@@ -120,11 +120,11 @@ $calssa = new BaseClass();
                     success: function (data) {
 
                         data = $.parseJSON(data);
-                        var datacolor = new Array();
+//                        var datacolor = new ;
                        
                         var datacount = 0;
                         var str = '';
-
+                        
                         datacount = parseInt(100 / data.length);
                         for (var i = 0; i < data.length; i++) {
 
